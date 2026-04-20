@@ -130,7 +130,8 @@ class ActivationPatching(Patching):
     def __init__(self, model_name, clean_prompts, clean_answers, corrupted_prompts, corrupted_answers,
                  metric_type=Metric.LOGIT_DIFF,
                  technique_type=Technique.DENOISING,
-                 viz_type=Viz.UP_MEANS_HIGH_ATTRIBUTION):
+                 viz_type=Viz.UP_MEANS_HIGH_ATTRIBUTION,
+                 unbatched=False, pairs_ids=None, dump=True):
         super().__init__(model_name, clean_prompts, clean_answers, corrupted_prompts, corrupted_answers)
         self.caches_and_baselines_ready = False
         self.metric_type = metric_type
@@ -427,6 +428,237 @@ class ActivationPatching(Patching):
                 self.model, self.clean_tokens, self.corrupted_cache, __inner_logit_metric_for_corrupted__)
             act_patch_result_corr_logprob_df = pd.DataFrame(act_patch_result_corr_logprob.cpu(), columns=self.first_prompt_as_ticks)
             return act_patch_result_clean_logprob_df, act_patch_result_corr_logprob_df
+        # Can I do all metrics at ONCE: yes, but in separate passes for Denoising and Noising.
+        # NOTE: Clean and corrupted answers and questions and invariant between all options.
+        elif (self.technique_type == ActivationPatching.Technique.DENOISING_OPTIMAL):
+            # NOTE: Check that we don't need to hold gradients for ActivationPatching.
+            assert(self.viz_type == ActivationPatching.Viz.READER_FRIENDLY)
+            # NOTE: We are defining array here but fill it in the function on purpose.
+            #       TransformerLens uses .item() call on the result of metric, expecting
+            #       the metric to return a scalar only.
+            # We will just accumulate all metrics in one array
+            # Then, we will map flattened output to non-flattened indices returned from TransformerLens.
+            if not self.unbatched:
+                metrics_output = []
+                def __metrics__(logits):
+                    logit_diff = (self.get_logit_diff(logits).item() - self.logit_diff_corrupted_q_clean_a_bsl) / (
+                                  self.logit_diff_clean_q_clean_a_bsl - self.logit_diff_corrupted_q_clean_a_bsl)
+                    both_lobprobs_not_normalized = self.get_both_logprobs(logits)
+                    clean_logprob = (both_lobprobs_not_normalized[0].item() - self.logprob_corrupted_q_clean_a_bsl) / (
+                                     self.logprob_clean_q_clean_a_bsl - self.logprob_corrupted_q_clean_a_bsl)
+                    corrupted_logprob = - (both_lobprobs_not_normalized[1].item() - self.logprob_corrupted_q_corrupted_a_bsl) / (
+                                           self.logprob_clean_q_corrupted_a_bsl - self.logprob_corrupted_q_corrupted_a_bsl)
+                    both_logits_not_normalized = self.get_both_logits(logits)
+                    clean_logit = (both_logits_not_normalized[0].item() - self.logit_corrupted_q_clean_a_bsl) / (
+                                   self.logit_clean_q_clean_a_bsl - self.logit_corrupted_q_clean_a_bsl)
+                    corrupted_logit = - (both_logits_not_normalized[1].item() - self.logit_corrupted_q_corrupted_a_bsl) / (
+                                         self.logit_clean_q_corrupted_a_bsl - self.logit_corrupted_q_corrupted_a_bsl)
+                    metrics_output.append([logit_diff, clean_logprob, corrupted_logprob, clean_logit, corrupted_logit])
+                    return torch.Tensor([logit_diff])
+
+                # index_df contains rows that corresponds to multi-level indices
+
+                ___, index_df = layer_specific_algorithm(self.model, self.corrupted_tokens, self.clean_cache,
+                                                         __metrics__, return_index_df=True)
+
+                assert len(metrics_output) > 0, "More than one layer were processed!"
+                first_layer_metrics = metrics_output[0]
+
+                index_axis_max_range = self.__create_indices__(activation_name, index_axis_names, self.corrupted_tokens)
+                # Ex: For (layer, pos) index_axis_max_range is [model.cfg.n_layers, tokens_to_run.shape[-1]]
+                patched_metrics_output = [torch.zeros(index_axis_max_range, device=self.model.cfg.device) \
+                                        for i in range(0, len(first_layer_metrics))]
+    
+                for i in range(0, len(first_layer_metrics)):
+                    for c, index_row in enumerate(list(index_df.iterrows())):
+                        index = index_row[1].to_list()
+                        patched_metrics_output[i][tuple(index)] = metrics_output[c][i]
+                return torch.stack(patched_metrics_output)
+            else:
+                print(f"Launching DENOISING_OPTIMAL!")
+
+                dump_folder = ""
+                if self.dump:
+                    assert activation_name != "", "If dumping is enabled, activation_name should be sent!"
+                    dump_folder = f"denoising_optimal_{activation_name}_{len(self.clean_tokens)}"
+                    print(f"Dumping is enabled! Results will be collected to {dump_folder}")
+
+                metrics_output = []
+                idx_state = 0
+
+                def __metrics_unbatched__(logits):
+                    nonlocal idx_state
+                    nonlocal metrics_output
+                    prompt_number = idx_state
+                    clean_answer_id = self.clean_answer_ids[prompt_number]
+                    corrupted_answer_id = self.corrupted_answer_ids[prompt_number]
+
+                    logit_diff = (self.get_logit_diff_unbatched(logits, clean_answer_id, corrupted_answer_id).item() - self.logit_diff_corrupted_q_clean_a_bsl) / (
+                                  self.logit_diff_clean_q_clean_a_bsl - self.logit_diff_corrupted_q_clean_a_bsl)
+                    both_lobprobs_not_normalized = self.get_both_logprobs_unbatched(logits, clean_answer_id, corrupted_answer_id)
+                    clean_logprob = (both_lobprobs_not_normalized[0].item() - self.logprob_corrupted_q_clean_a_bsl) / (
+                                     self.logprob_clean_q_clean_a_bsl - self.logprob_corrupted_q_clean_a_bsl)
+                    corrupted_logprob = - (both_lobprobs_not_normalized[1].item() - self.logprob_corrupted_q_corrupted_a_bsl) / (
+                                           self.logprob_clean_q_corrupted_a_bsl - self.logprob_corrupted_q_corrupted_a_bsl)
+                    both_logits_not_normalized = self.get_both_logits_unbatched(logits, clean_answer_id, corrupted_answer_id)
+                    clean_logit = (both_logits_not_normalized[0].item() - self.logit_corrupted_q_clean_a_bsl) / (
+                                   self.logit_clean_q_clean_a_bsl - self.logit_corrupted_q_clean_a_bsl)
+                    corrupted_logit = - (both_logits_not_normalized[1].item() - self.logit_corrupted_q_corrupted_a_bsl) / (
+                                         self.logit_clean_q_corrupted_a_bsl - self.logit_corrupted_q_corrupted_a_bsl)
+                    metrics_output.append([logit_diff, clean_logprob, corrupted_logprob, clean_logit, corrupted_logit])
+
+                    return torch.Tensor([logit_diff])
+
+                metrics_number = 5
+                assert len(self.corrupted_tokens) > 0
+                # FIXME: Here we are relying on the fact that all prompts has the same token count!!!!!
+                index_axis_max_range = self.__create_indices__(activation_name, index_axis_names, self.corrupted_tokens[0])
+                # Ex: For (layer, pos) index_axis_max_range is [model.cfg.n_layers, tokens_to_run.shape[-1]]
+                patched_metrics_output = [torch.zeros(index_axis_max_range, device=self.model.cfg.device) \
+                                          for _ in range(0, metrics_number)]
+                num_prompts = len(self.clean_tokens)
+                for i in range(0, num_prompts):
+                    idx_state = i
+                    print(f"Handling pair : {self.pairs_ids[i]}")
+                    clean_result, clean_cache = self.model.run_with_cache(self.clean_tokens[i])
+                    del clean_result
+                    gc.collect()
+
+                    ___, index_df = layer_specific_algorithm(self.model, self.corrupted_tokens[i], clean_cache,
+                                                             __metrics_unbatched__, return_index_df=True)
+
+                    assert len(metrics_output) > 0, "More than one layer were processed!"
+                    if self.dump:
+                        metrics_to_dump = [torch.zeros(index_axis_max_range, device=self.model.cfg.device) \
+                                           for _ in range(0, metrics_number)]
+                        for m in range(0, metrics_number):
+                            for c, index_row in enumerate(list(index_df.iterrows())):
+                                index = index_row[1].to_list()
+                                metrics_to_dump[m][tuple(index)] = metrics_output[c][m]
+                        # Separate dumps are needed for calculation of Confidence Intervals:
+                        torch.save(torch.stack(metrics_to_dump), f"{dump_folder}/{idx_state}_prompt_{metrics_number}_metrics.pt")
+
+                    for m in range(0, metrics_number):
+                        for c, index_row in enumerate(list(index_df.iterrows())):
+                            index = index_row[1].to_list()
+                            patched_metrics_output[m][tuple(index)] += metrics_output[c][m] / num_prompts
+                    metrics_output = []
+                idx_state = 0
+                patched_metrics_output_tnsr = torch.stack(patched_metrics_output)
+                if self.dump:
+                    torch.save(patched_metrics_output_tnsr, f"{dump_folder}/averaged_{metrics_number}_metrics.pt")
+                return patched_metrics_output_tnsr
+        elif (self.technique_type == ActivationPatching.Technique.NOISING_OPTIMAL):
+            assert(self.viz_type == ActivationPatching.Viz.READER_FRIENDLY)
+            if not self.unbatched:
+                metrics_output = []
+                def __metrics__(logits):
+                    logit_diff =  (self.logit_diff_clean_q_clean_a_bsl - self.get_logit_diff(logits).item()) / (
+                                   self.logit_diff_clean_q_clean_a_bsl - self.logit_diff_corrupted_q_clean_a_bsl)
+                    both_logprobs_not_normalized = self.get_both_logprobs(logits)
+                    clean_logprob = - (both_logprobs_not_normalized[0].item() - self.logprob_clean_q_clean_a_bsl) / (
+                                       self.logprob_corrupted_q_clean_a_bsl - self.logprob_clean_q_clean_a_bsl)
+                    corrupted_logprob = (self.logprob_clean_q_corrupted_a_bsl -  both_logprobs_not_normalized[1].item()) / (
+                                         self.logprob_clean_q_corrupted_a_bsl - self.logprob_corrupted_q_corrupted_a_bsl)
+                    both_logits_not_normalized = self.get_both_logits(logits)
+                    clean_logit = - (both_logits_not_normalized[0].item() - self.logit_clean_q_clean_a_bsl) / (
+                                     self.logit_corrupted_q_clean_a_bsl - self.logit_clean_q_clean_a_bsl)
+                    corrupted_logit = (self.logit_clean_q_corrupted_a_bsl -  both_logits_not_normalized[1].item()) / (
+                                       self.logit_clean_q_corrupted_a_bsl - self.logit_corrupted_q_corrupted_a_bsl)
+                    metrics_output.append([logit_diff, clean_logprob, corrupted_logprob, clean_logit, corrupted_logit])
+                    return torch.Tensor([logit_diff])
+
+                ___, index_df = layer_specific_algorithm(self.model, self.clean_tokens, self.corrupted_cache,
+                                                         __metrics__, return_index_df=True)
+
+                assert len(metrics_output) > 0, "More than one layer were processed!"
+                first_layer_metrics = metrics_output[0]
+
+                index_axis_max_range = self.__create_indices__(activation_name, index_axis_names, self.clean_tokens)
+                patched_metrics_output = [torch.zeros(index_axis_max_range, device=self.model.cfg.device) \
+                                          for i in range(0, len(first_layer_metrics))]
+
+                for i in range(0, len(first_layer_metrics)):
+                    for c, index_row in enumerate(list(index_df.iterrows())):
+                        index = index_row[1].to_list()
+                        patched_metrics_output[i][tuple(index)] = metrics_output[c][i]
+
+                return torch.stack(patched_metrics_output)
+            else:
+                print(f"Launching NOISING_OPTIMAL!")
+
+                dump_folder = ""
+                if self.dump:
+                    assert activation_name != "", "If dumping is enabled, activation_name should be sent!"
+                    dump_folder = f"noising_optimal_{activation_name}_{len(self.clean_tokens)}"
+                    print(f"Dumping is enabled! Results will be collected to {dump_folder}")
+
+                metrics_output = []
+                idx_state = 0
+
+                def __metrics_unbatched__(logits):
+                    nonlocal idx_state
+                    nonlocal metrics_output
+                    prompt_number = idx_state
+
+                    clean_answer_id = self.clean_answer_ids[prompt_number]
+                    corrupted_answer_id = self.corrupted_answer_ids[prompt_number]
+                    logit_diff =  (self.logit_diff_clean_q_clean_a_bsl - self.get_logit_diff_unbatched(logits, clean_answer_id, corrupted_answer_id).item()) / (
+                                   self.logit_diff_clean_q_clean_a_bsl - self.logit_diff_corrupted_q_clean_a_bsl)
+                    both_logprobs_not_normalized = self.get_both_logprobs_unbatched(logits, clean_answer_id, corrupted_answer_id)
+                    clean_logprob = - (both_logprobs_not_normalized[0].item() - self.logprob_clean_q_clean_a_bsl) / (
+                                       self.logprob_corrupted_q_clean_a_bsl - self.logprob_clean_q_clean_a_bsl)
+                    corrupted_logprob = (self.logprob_clean_q_corrupted_a_bsl -  both_logprobs_not_normalized[1].item()) / (
+                                         self.logprob_clean_q_corrupted_a_bsl - self.logprob_corrupted_q_corrupted_a_bsl)
+                    both_logits_not_normalized = self.get_both_logits_unbatched(logits, clean_answer_id, corrupted_answer_id)
+                    clean_logit = - (both_logits_not_normalized[0].item() - self.logit_clean_q_clean_a_bsl) / (
+                                     self.logit_corrupted_q_clean_a_bsl - self.logit_clean_q_clean_a_bsl)
+                    corrupted_logit = (self.logit_clean_q_corrupted_a_bsl -  both_logits_not_normalized[1].item()) / (
+                                       self.logit_clean_q_corrupted_a_bsl - self.logit_corrupted_q_corrupted_a_bsl)
+                    metrics_output.append([logit_diff, clean_logprob, corrupted_logprob, clean_logit, corrupted_logit])
+
+                    return torch.Tensor([logit_diff])
+
+                metrics_number = 5
+                assert len(self.clean_tokens) > 0
+                # FIXME: Here we are relying on the fact that all prompts has the same token count!!!!!
+                index_axis_max_range = self.__create_indices__(activation_name, index_axis_names, self.clean_tokens[0])
+                # Ex: For (layer, pos) index_axis_max_range is [model.cfg.n_layers, tokens_to_run.shape[-1]]
+                patched_metrics_output = [torch.zeros(index_axis_max_range, device=self.model.cfg.device) \
+                                          for _ in range(0, metrics_number)]
+                num_prompts = len(self.clean_tokens)
+                for i in range(0, num_prompts):
+                    idx_state = i
+                    print(f"Handling pair : {self.pairs_ids[i]}")
+
+                    corrupted_result, corrupted_cache = self.model.run_with_cache(self.corrupted_tokens[i])
+                    del corrupted_result
+                    gc.collect()
+
+                    ___, index_df = layer_specific_algorithm(self.model, self.clean_tokens[i], corrupted_cache,
+                                                             __metrics_unbatched__, return_index_df=True)
+
+                    assert len(metrics_output) > 0, "More than one layer were processed!"
+                    if self.dump:
+                        metrics_to_dump = [torch.zeros(index_axis_max_range, device=self.model.cfg.device) \
+                                           for _ in range(0, metrics_number)]
+                        for m in range(0, metrics_number):
+                            for c, index_row in enumerate(list(index_df.iterrows())):
+                                index = index_row[1].to_list()
+                                metrics_to_dump[m][tuple(index)] = metrics_output[c][m]
+                        # Separate dumps are needed for calculation of Confidence Intervals:
+                        torch.save(torch.stack(metrics_to_dump), f"{dump_folder}/{idx_state}_prompt_{metrics_number}_metrics.pt")
+
+                    for m in range(0, metrics_number):
+                        for c, index_row in enumerate(list(index_df.iterrows())):
+                            index = index_row[1].to_list()
+                            patched_metrics_output[m][tuple(index)] += metrics_output[c][m] / num_prompts
+                    metrics_output = []
+                idx_state = 0
+                patched_metrics_output_tnsr = torch.stack(patched_metrics_output)
+                if self.dump:
+                    torch.save(patched_metrics_output_tnsr, f"{dump_folder}/averaged_{metrics_number}_metrics.pt")
+                return patched_metrics_output_tnsr
         else:
             raise Exception("Unknown patching technique type is sent!")
 
