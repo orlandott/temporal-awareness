@@ -158,16 +158,16 @@ export default function ScoreCards() {
       </div>
 
       {data.figures.length > 0 && (
-        <div className="grid gap-4 sm:grid-cols-3">
+        <div className="grid gap-6">
           {data.figures.map((f) => (
-            <figure key={f.name} className="rounded-lg border border-rule bg-white p-3">
+            <figure key={f.name} className="rounded-lg border border-rule bg-white p-4">
               <img
                 src={asset(`figures/${f.file}`)}
                 alt={f.caption}
                 loading="lazy"
-                className="rounded bg-white"
+                className="w-full rounded bg-white"
               />
-              <figcaption className="mt-2 font-sans text-xs text-ink-soft">{f.caption}</figcaption>
+              <figcaption className="mt-2 font-sans text-sm text-ink-soft">{f.caption}</figcaption>
             </figure>
           ))}
         </div>
