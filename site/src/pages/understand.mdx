@@ -51,12 +51,35 @@ Three reasons this is more than a curiosity:
    from a single layer of activations. That makes a cheap, real-time *probe* possible — the
    kind of concrete, deployable monitor that safety work needs.
 
+## This isn't a lone bet
+
+Reading a safety-relevant property straight from a model's activations is already a working
+idea, not a hope. Independent researchers have used simple linear probes to spot hidden
+"sleeper-agent" backdoors, and to catch a 70-billion-parameter model being strategically
+deceptive — concealing insider trading, or quietly underperforming on a safety test —
+*nearly perfectly* (detection scores up to 0.999). We're pointing that same well-tested
+playbook at a new target: a model's sense of **time**.
+
 ## What this project actually does
 
 - **Detect** temporal scope from internal representations (linear probes).
 - **Steer** a model's temporal orientation by nudging its activations.
 - **Locate** the circuits that compute temporal decisions (activation patching).
 - **Stress-test** all of the above: when do these representations fail?
+
+## Early signs, honestly held
+
+Two early findings hint at why this is worth doing — and one keeps us honest:
+
+- **A model may "know" when it's unsure.** Its internal uncertainty shows up most strongly at
+  the *very first step* of its reasoning, then fades as it keeps going — exactly when a
+  long-running agent would most need that self-check.
+- **"Planning" can be a mirage.** When a model looks like it's planning ahead, that can be one
+  of two things: genuinely setting up a future step, or just leaving *breadcrumbs* a probe
+  picks up after the fact. In one code-writing test, a dead-simple shortcut — the function's
+  name and inputs alone — predicted just as well as reading the model's internals. So we now
+  run a "baseline staircase" on every probe, to be sure we're reading real understanding and
+  not a trick.
 
 See the verified numbers on <a href={BASE + "what-we-score"}>What we score</a>, poke at the
 geometry on <a href={BASE + "explore"}>Explore</a>, then <a href={BASE + "contribute"}>pick an
