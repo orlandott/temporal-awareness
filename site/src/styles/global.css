@@ -3,7 +3,8 @@
 @tailwind utilities;
 
 :root {
-  color-scheme: dark;
+  color-scheme: light;
+  --ombre: linear-gradient(135deg, #6d28d9 0%, #8b5cf6 55%, #a78bfa 100%);
 }
 
 html {
@@ -11,24 +12,97 @@ html {
 }
 
 body {
-  @apply bg-slate-950 text-slate-200 antialiased;
+  @apply bg-paper text-ink antialiased;
+  font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+  font-feature-settings: "kern", "liga";
 }
 
+/* ---------- Editorial utilities ---------- */
+
+.font-display {
+  font-family: "Libre Caslon Text", Georgia, "Times New Roman", serif;
+}
+
+/* Uppercase Franklin label above a headline */
+.kicker {
+  @apply font-sans text-xs font-semibold uppercase tracking-[0.2em] text-ink-soft;
+}
+.kicker-accent {
+  @apply font-sans text-xs font-semibold uppercase tracking-[0.2em] text-accent-700;
+}
+
+/* Inline editorial link */
+.link-accent {
+  @apply font-medium text-accent-700 underline decoration-accent-300 underline-offset-2 hover:text-accent-800;
+}
+
+/* Hairline + nameplate rules */
+.rule {
+  @apply border-0 border-t border-rule;
+}
+.rule-ombre {
+  height: 3px;
+  border: 0;
+  background: var(--ombre);
+  border-radius: 2px;
+}
+.rule-double {
+  height: 6px;
+  border: 0;
+  border-top: 3px solid #121212;
+  border-bottom: 1px solid #121212;
+}
+
+/* Purple-ombre drop cap on the opening paragraph of a story */
+.dropcap::first-letter {
+  float: left;
+  margin: 0.04em 0.08em 0 0;
+  font-family: "Libre Caslon Text", Georgia, serif;
+  font-weight: 700;
+  font-size: 3.7em;
+  line-height: 0.78;
+  background: var(--ombre);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* ---------- Prose (MDX pages): light editorial ---------- */
+.prose-site {
+  @apply text-ink;
+  font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+}
+.prose-site :where(h1) {
+  @apply font-display mb-3 text-4xl font-bold leading-tight text-ink;
+}
 .prose-site :where(h2) {
-  @apply mt-12 mb-4 text-2xl font-bold text-white;
+  @apply font-display mt-12 mb-3 border-t border-rule pt-5 text-2xl font-bold text-ink;
 }
 .prose-site :where(h3) {
-  @apply mt-8 mb-3 text-xl font-semibold text-white;
+  @apply font-display mt-8 mb-2 text-xl font-semibold text-ink;
 }
 .prose-site :where(p) {
-  @apply my-4 leading-relaxed text-slate-300;
+  @apply my-4 text-[1.075rem] leading-8 text-ink-soft;
 }
 .prose-site :where(ul) {
-  @apply my-4 list-disc space-y-2 pl-6 text-slate-300;
+  @apply my-4 list-disc space-y-2 pl-6 text-ink-soft;
+}
+.prose-site :where(ol) {
+  @apply my-4 list-decimal space-y-2 pl-6 text-ink-soft;
+}
+.prose-site :where(li)::marker {
+  @apply text-accent-500;
+}
+.prose-site :where(strong) {
+  @apply font-semibold text-ink;
 }
 .prose-site :where(a) {
-  @apply text-indigo-400 underline decoration-indigo-400/40 underline-offset-2 hover:text-indigo-300;
+  @apply font-medium text-accent-700 underline decoration-accent-300 underline-offset-2 hover:text-accent-800;
+}
+.prose-site :where(blockquote) {
+  @apply my-6 border-l-2 border-accent-400 pl-5 italic text-ink-soft;
 }
 .prose-site :where(code) {
-  @apply rounded bg-slate-800 px-1.5 py-0.5 text-sm text-indigo-200;
+  @apply rounded bg-stone-100 px-1.5 py-0.5 font-sans text-[0.85em] text-accent-800;
 }

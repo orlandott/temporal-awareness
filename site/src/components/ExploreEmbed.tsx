@@ -3,10 +3,10 @@ import { GEOAPP_URL, REPO_URL } from "../lib/site";
 
 function Fallback({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-8 text-center">
+    <div className="rounded-lg border border-rule bg-white p-8 text-center">
       <div className="mb-2 text-4xl">🧭</div>
-      <h3 className="text-lg font-semibold text-white">{title}</h3>
-      <div className="mx-auto mt-2 max-w-md text-sm text-slate-400">{children}</div>
+      <h3 className="font-display text-lg font-semibold text-ink">{title}</h3>
+      <div className="mx-auto mt-2 max-w-md text-sm text-ink-soft">{children}</div>
     </div>
   );
 }
@@ -32,10 +32,10 @@ export default function ExploreEmbed() {
         </p>
         <p className="mt-3">
           Run it locally from{" "}
-          <a className="text-indigo-400 underline" href={`${REPO_URL}/tree/main/src/intertemporal/geoapp`}>
+          <a className="font-medium text-accent-700 underline" href={`${REPO_URL}/tree/main/src/intertemporal/geoapp`}>
             <code>src/intertemporal/geoapp</code>
           </a>
-          , or set <code className="rounded bg-slate-800 px-1">PUBLIC_GEOAPP_URL</code> at build time to embed it here.
+          , or set <code className="rounded bg-stone-100 px-1 font-sans text-accent-800">PUBLIC_GEOAPP_URL</code> at build time to embed it here.
         </p>
       </Fallback>
     );
@@ -44,15 +44,15 @@ export default function ExploreEmbed() {
   return (
     <div>
       {status === "timeout" && (
-        <div className="mb-3 rounded-lg border border-amber-700/50 bg-amber-950/30 p-3 text-sm text-amber-200">
+        <div className="mb-3 rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm text-amber-800">
           The explorer is taking a while — the backend may be waking up.{" "}
-          <a className="underline" href={GEOAPP_URL} target="_blank" rel="noreferrer">
+          <a className="font-medium text-accent-700 underline" href={GEOAPP_URL} target="_blank" rel="noreferrer">
             Open it in a new tab
           </a>
           .
         </div>
       )}
-      <div className="aspect-[16/10] w-full overflow-hidden rounded-xl border border-slate-800 bg-slate-900">
+      <div className="aspect-[16/10] w-full overflow-hidden rounded-lg border border-rule bg-white">
         <iframe
           src={GEOAPP_URL}
           title="Temporal geometry explorer"

@@ -13,31 +13,32 @@ const steps = [
 
 <BaseLayout title="Contribute">
   <section class="mx-auto max-w-4xl px-4 pt-12">
-    <h1 class="text-3xl font-bold text-white">Contribute</h1>
-    <p class="mt-4 text-slate-300">
-      This is an <strong class="text-white">Open Safety Project</strong>: built so people new to AI safety can
+    <p class="kicker-accent">Contribute</p>
+    <h1 class="font-display mt-2 text-4xl font-bold text-ink">Do real safety work — start small</h1>
+    <p class="mt-4 text-[1.075rem] leading-8 text-ink-soft">
+      This is an <strong class="text-ink">Open Safety Project</strong>: built so people new to AI safety can
       make real contributions with a low barrier to entry. Every piece of work is a GitHub issue — claim one
       and go.
     </p>
-    <div class="mt-6 grid gap-3 sm:grid-cols-4">
+    <div class="mt-6 grid gap-px overflow-hidden rounded-lg border border-rule bg-rule sm:grid-cols-4">
       {
         steps.map((s) => (
-          <div class="rounded-xl border border-slate-800 bg-slate-900/60 p-4">
-            <div class="text-sm font-bold text-indigo-400">Step {s.n}</div>
-            <div class="mt-1 font-semibold text-white">{s.title}</div>
-            <div class="mt-1 text-sm text-slate-400">{s.body}</div>
+          <div class="bg-paper p-4">
+            <div class="font-sans text-xs font-bold uppercase tracking-wide text-accent-700">Step {s.n}</div>
+            <div class="mt-1 font-display font-bold text-ink">{s.title}</div>
+            <div class="mt-1 text-sm text-ink-soft">{s.body}</div>
           </div>
         ))
       }
     </div>
-    <p class="mt-5 text-sm text-slate-400">
-      Full walkthrough in the <a class="text-indigo-400 underline" href={CONTRIBUTING_URL}>contributor guide</a>.
-      How issues map to Tracks and Thrusts: the <a class="text-indigo-400 underline" href={RESEARCH_PROGRAM_URL}>research program</a>.
+    <p class="mt-5 text-sm text-ink-soft">
+      Full walkthrough in the <a class="link-accent" href={CONTRIBUTING_URL}>contributor guide</a>.
+      How issues map to Tracks and Thrusts: the <a class="link-accent" href={RESEARCH_PROGRAM_URL}>research program</a>.
     </p>
   </section>
 
   <section class="mx-auto max-w-4xl px-4 py-10">
-    <h2 class="mb-4 text-2xl font-bold text-white">Open issues</h2>
+    <h2 class="font-display mb-4 text-2xl font-bold text-ink">Open issues</h2>
     <IssueBoard client:load />
   </section>
 </BaseLayout>

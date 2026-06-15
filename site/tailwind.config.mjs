@@ -4,7 +4,32 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["Inter", "ui-sans-serif", "system-ui", "sans-serif"],
+        // New York Times-style stack: Franklin (open-sourced by NYT) for UI/kickers,
+        // Caslon for display headlines, Georgia (NYT's web body) for running text.
+        sans: ['"Libre Franklin"', "ui-sans-serif", "system-ui", "sans-serif"],
+        serif: ['"Libre Caslon Text"', "Georgia", "Cambria", "Times New Roman", "serif"],
+        body: ["Georgia", "Cambria", "Times New Roman", "serif"],
+      },
+      colors: {
+        paper: "#fbfaf7", // warm near-white newsprint
+        ink: "#121212", // near-black headline/text
+        "ink-soft": "#39342e", // warm body text
+        rule: "#d8d3c8", // hairline rules
+        accent: {
+          50: "#f5f3ff",
+          100: "#ede9fe",
+          200: "#ddd6fe",
+          300: "#c4b5fd",
+          400: "#a78bfa",
+          500: "#8b5cf6",
+          600: "#7c3aed",
+          700: "#6d28d9",
+          800: "#5b21b6",
+          900: "#4c1d95",
+        },
+      },
+      maxWidth: {
+        prose: "68ch",
       },
     },
   },

@@ -39,26 +39,25 @@ const path = Astro.url.pathname;
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Libre+Franklin:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
   </head>
-  <body class="flex min-h-screen flex-col font-sans">
-    <header class="sticky top-0 z-30 border-b border-slate-800 bg-slate-950/80 backdrop-blur">
-      <nav class="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
-        <a href={`${BASE}`} class="flex items-center gap-2 font-bold text-white">
-          <span class="grid h-7 w-7 place-items-center rounded bg-indigo-500 text-sm">⏳</span>
-          <span>Temporal Awareness</span>
+  <body class="flex min-h-screen flex-col">
+    <header class="sticky top-0 z-30 border-b border-rule bg-paper/90 backdrop-blur">
+      <nav class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-2.5">
+        <a href={`${BASE}`} class="font-display text-lg font-bold tracking-tight text-ink">
+          Temporal Awareness
         </a>
-        <div class="hidden items-center gap-1 text-sm sm:flex">
+        <div class="hidden items-center gap-5 sm:flex">
           {
             nav.map((item) => {
               const active = path === item.href || (item.href !== BASE && path.startsWith(item.href));
               return (
                 <a
                   href={item.href}
-                  class={`rounded px-3 py-1.5 transition ${
-                    active ? "bg-slate-800 text-white" : "text-slate-300 hover:text-white"
+                  class={`font-sans text-xs font-semibold uppercase tracking-widest transition ${
+                    active ? "text-accent-700" : "text-ink-soft hover:text-ink"
                   }`}
                 >
                   {item.label}
@@ -68,9 +67,9 @@ const path = Astro.url.pathname;
           }
           <a
             href={ISSUES_URL}
-            class="ml-2 rounded bg-indigo-500 px-3 py-1.5 font-medium text-white hover:bg-indigo-400"
+            class="font-sans text-xs font-semibold uppercase tracking-widest text-accent-700 hover:text-accent-800"
           >
-            Browse issues
+            Browse issues →
           </a>
         </div>
       </nav>
@@ -88,15 +87,15 @@ const path = Astro.url.pathname;
       )
     }
 
-    <footer class="border-t border-slate-800 py-8 text-sm text-slate-400">
-      <div class="mx-auto flex max-w-5xl flex-col gap-2 px-4 sm:flex-row sm:items-center sm:justify-between">
-        <p>
-          An <span class="text-slate-200">Open Safety Project</span> · MIT licensed
+    <footer class="border-t border-rule">
+      <div class="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-8 text-sm text-ink-soft sm:flex-row sm:items-center sm:justify-between">
+        <p class="font-sans">
+          <span class="font-semibold text-ink">Temporal Awareness</span> — an Open Safety Project · MIT licensed
         </p>
-        <div class="flex gap-4">
-          <a href={REPO_URL} class="hover:text-white">GitHub</a>
-          <a href={`${BASE}contribute`} class="hover:text-white">Contribute</a>
-          <a href={`${BASE}start-here`} class="hover:text-white">Start here</a>
+        <div class="flex gap-5 font-sans text-xs uppercase tracking-widest">
+          <a href={REPO_URL} class="hover:text-ink">GitHub</a>
+          <a href={`${BASE}contribute`} class="hover:text-ink">Contribute</a>
+          <a href={`${BASE}start-here`} class="hover:text-ink">Start here</a>
         </div>
       </div>
     </footer>

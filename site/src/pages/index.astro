@@ -1,103 +1,321 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { BASE, ISSUES_URL, GOOD_FIRST_ISSUES_URL } from "../lib/site";
+import {
+  BASE,
+  ISSUES_URL,
+  GOOD_FIRST_ISSUES_URL,
+  RESULTS_URL,
+  CONTRIBUTING_URL,
+  RESEARCH_PROGRAM_URL,
+} from "../lib/site";
 
-const funnel = [
+const today = new Date().toLocaleDateString("en-US", {
+  weekday: "long",
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+});
+
+const statusStyle: Record<string, string> = {
+  verified: "text-emerald-700",
+  reported: "text-ink-soft",
+  preliminary: "text-accent-700",
+};
+
+const scoreboard = [
   {
-    href: `${BASE}understand`,
-    emoji: "🧠",
-    title: "Understand",
-    body: "What temporal awareness is, and why it matters for AI safety — in plain language.",
+    value: "92.5%",
+    where: "Layer 8",
+    model: "GPT-2 (124M)",
+    note: "Time-horizon is linearly readable from a single layer (train, n=400).",
+    status: "verified",
   },
   {
-    href: `${BASE}what-we-score`,
-    emoji: "📊",
-    title: "What we score",
-    body: "The actual metrics, with verified numbers: can we read a model's time-horizon off its activations?",
+    value: "84.0%",
+    where: "Layer 6",
+    model: "GPT-2 (124M)",
+    note: "The same signal holds on fully held-out data.",
+    status: "verified",
   },
   {
-    href: `${BASE}contribute`,
-    emoji: "🌱",
-    title: "Contribute",
-    body: "Browse open research issues and claim one. New to AI safety? This is built for you.",
+    value: "100%",
+    where: "Layers 10–11",
+    model: "GPT-2 (124M)",
+    note: "Probes still separate short- vs long-term with explicit time words removed (keyword-ablated control).",
+    status: "verified",
+  },
+  {
+    value: "99.2%",
+    where: "Layer 26",
+    model: "Qwen3-4B",
+    note: "Implicit short/long pairs with no temporal keywords; shuffled-label controls sit at chance.",
+    status: "reported",
+  },
+  {
+    value: "Layers 29–31",
+    where: "causal patching",
+    model: "Qwen3-4B",
+    note: "Where the temporal computation actually lives.",
+    status: "reported",
+  },
+  {
+    value: "~4×",
+    where: "Layer 22",
+    model: "Qwen3-4B",
+    note: "Activation steering shifts probability toward long-term completions.",
+    status: "preliminary",
+  },
+  {
+    value: "83.1% / 91.3%",
+    where: "Layer 13",
+    model: "Gemma-2-2B",
+    note: "Sparse-autoencoder latents vs. the full-activation probe.",
+    status: "verified",
+  },
+];
+
+const done = [
+  {
+    title: "The probe-and-steer study",
+    body: "Linear probes read a model's time-horizon from a single GPT-2 layer — peaking at <strong>92.5% at Layer 8</strong> — and learned mean-difference directions nudge its outputs. This is the project's foundation result.",
+  },
+  {
+    title: "The SPAR research cohort",
+    body: "Eleven fellows extended probing and activation-addition steering across Qwen3, Llama and Pythia, reaching <strong>99.2% at Layer 26 of Qwen3-4B</strong> on keyword-free pairs and localizing the computation to <strong>layers 29–31</strong>.",
+  },
+  {
+    title: "Patience degradation, mechanistically",
+    body: "A larger study spanning seven models and four architecture families asks how safety behavior drifts over repetitive sessions — finding refusal erosion of up to 33% in one model while another stays perfectly stable — using EAP-IG attribution, causal patching and trajectory geometry.",
+  },
+  {
+    title: "The intertemporal framework",
+    body: "The largest part of the codebase: preference-pair generation, layer-wise probes, a multi-level activation-patching and attribution pipeline, and the interactive <em>geoapp</em> for rotating through the geometry of the temporal signal.",
+  },
+  {
+    title: "An open, low-barrier program",
+    body: "This site and a structured GitHub-issue research program make the work contributable without a PhD, a GPU, or an interpretability background. Every task is an issue you can claim.",
+  },
+];
+
+const missing = [
+  {
+    h: "Statistical power",
+    body: "The headline sycophancy probe rests on just <strong>11 positive examples</strong>; roughly a thousand are needed to be conclusive.",
+  },
+  {
+    h: "One model carries the headline",
+    body: "The 92.5% / 84.0% / 100% figures are <strong>GPT-2 (124M) only</strong>. The multi-model breadth comes from separate efforts whose status is partial.",
+  },
+  {
+    h: "Surface cues",
+    body: "In one code-model experiment a trivial name-and-parameters baseline <strong>beat the probe</strong> — a reminder that every claim needs a strong control.",
+  },
+  {
+    h: "Steering isn't reliable yet",
+    body: "Steering consistency is around 60% against a >70% target, and the steering-to-probe correlation often cited elsewhere is <strong>not yet verified</strong> in this repository.",
+  },
+  {
+    h: "Designed, not yet run",
+    body: "Much of the degradation study is scaffolded but not fully executed; its intervention phase is unimplemented, and several safety runs failed or timed out.",
+  },
+  {
+    h: "Sparse autoencoders & decomposition",
+    body: "SAE and parameter-decomposition work is mostly method and proof-of-concept, not yet applied to the temporal data.",
+  },
+  {
+    h: "A scale ceiling",
+    body: "No lookahead or structural planning has been observed in any model up to 7B parameters.",
+  },
+  {
+    h: "Reproducibility",
+    body: "The raw contrastive-pair datasets are currently missing from the repo, so a fresh-clone verification would fail — a concrete place to help.",
   },
 ];
 ---
 
 <BaseLayout title="Temporal Awareness">
-  <section class="relative overflow-hidden border-b border-slate-800">
-    <div class="absolute inset-0 bg-gradient-to-b from-indigo-950/40 to-transparent"></div>
-    <div class="relative mx-auto max-w-3xl px-4 py-20 text-center">
-      <span class="inline-block rounded-full border border-indigo-500/40 bg-indigo-500/10 px-3 py-1 text-xs font-medium text-indigo-300">
-        The first Open Safety Project
-      </span>
-      <h1 class="mt-5 text-4xl font-extrabold leading-tight text-white sm:text-5xl">
-        Can we read what an AI is <span class="text-indigo-400">thinking about time?</span>
-      </h1>
-      <p class="mx-auto mt-5 max-w-2xl text-lg text-slate-300">
-        Temporal awareness is how a model internally represents <strong class="text-white">time horizons</strong> —
-        whether it's "thinking" short-term or long-term — and whether that inner sense matches what it
-        actually says.
+  <!-- Masthead / nameplate -->
+  <header class="mx-auto max-w-5xl px-4 pt-10 text-center">
+    <div class="flex items-center justify-center gap-3 font-sans text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-ink-soft">
+      <span>Vol. I · No. 1</span>
+      <span class="h-1 w-1 rounded-full bg-accent-500"></span>
+      <span>An Open Safety Project</span>
+    </div>
+    <h1 class="font-display mt-3 text-5xl font-bold tracking-tight text-ink sm:text-6xl">
+      Temporal Awareness
+    </h1>
+    <p class="mt-2 font-sans text-[0.7rem] uppercase tracking-[0.2em] text-ink-soft">
+      {today} · Detecting &amp; steering how AI models represent time
+    </p>
+    <hr class="rule-double mx-auto mt-4" />
+  </header>
+
+  <!-- Lead story -->
+  <article class="mx-auto max-w-5xl px-4 py-10">
+    <div class="mx-auto max-w-3xl text-center">
+      <p class="kicker-accent">The Lead · Interpretability</p>
+      <h2 class="font-display mt-3 text-4xl font-bold leading-[1.08] text-ink sm:text-5xl">
+        Can we read what an AI is thinking about time?
+      </h2>
+      <p class="mx-auto mt-4 max-w-2xl font-display text-xl italic leading-relaxed text-ink-soft">
+        A model's inner sense of “now versus later” can be read straight from its activations —
+        and when it drifts, a cheap linear probe may catch it before the model says a word.
       </p>
-      <p class="mx-auto mt-4 max-w-2xl text-slate-400">
-        As AI agents run longer and more autonomously, their behavior — including their safety
-        behavior — can drift over time. We're learning to read that drift directly from a model's
-        activations, before it shows up in what the model says.
+      <p class="mt-4 font-sans text-xs uppercase tracking-widest text-ink-soft">
+        By The Open Safety Project
       </p>
-      <div class="mt-8 flex flex-wrap justify-center gap-3">
-        <a href={`${BASE}understand`} class="rounded-lg bg-indigo-500 px-5 py-2.5 font-medium text-white hover:bg-indigo-400">
-          Start with the idea →
+    </div>
+
+    <hr class="rule mx-auto mt-8 max-w-3xl" />
+
+    <div class="mx-auto mt-8 max-w-3xl">
+      <p class="dropcap text-[1.075rem] leading-8 text-ink-soft">
+        Large language models constantly make decisions that play out over time: answer now or
+        think longer, optimize this turn or the whole conversation, take the sure thing today or
+        the bigger payoff later. <strong class="text-ink">Temporal awareness</strong> is how a
+        model internally represents those time horizons — and whether that inner sense matches
+        what it actually says.
+      </p>
+      <div class="mt-4 gap-8 md:columns-2">
+        <p class="mb-4 text-[1.075rem] leading-8 text-ink-soft">
+          That gap is the safety-relevant signal. A model can <em>say</em> something short-term
+          and harmless while its internal state leans toward long-horizon planning, or the
+          reverse. As agents run in longer, more autonomous loops, their behavior — including
+          their safety behavior — can drift, and watching only the words means noticing too late.
+        </p>
+        <p class="mb-4 text-[1.075rem] leading-8 text-ink-soft">
+          The project's wager is that this inner horizon is
+          <strong class="text-ink">linearly readable</strong> from a single layer of activations.
+          If so, a lightweight probe becomes a real-time monitor — concrete, deployable safety
+          infrastructure rather than a philosophical worry.
+        </p>
+        <p class="text-[1.075rem] leading-8 text-ink-soft">
+          What follows is an honest ledger: the results that hold up, and the considerable work
+          that is still missing.
+        </p>
+      </div>
+    </div>
+
+    <aside class="mx-auto my-10 max-w-3xl border-l-2 border-accent-500 pl-5">
+      <p class="font-display text-2xl italic leading-snug text-ink">
+        “If we can measure the gap between what a model intends and what it says, we can notice
+        when the two come apart.”
+      </p>
+    </aside>
+  </article>
+
+  <!-- By the numbers -->
+  <section class="mx-auto max-w-5xl px-4 py-10">
+    <div class="mx-auto max-w-4xl">
+      <p class="kicker">By the Numbers</p>
+      <h2 class="font-display mt-2 text-3xl font-bold text-ink">The findings so far</h2>
+      <hr class="rule-ombre mt-3 w-24" />
+      <p class="mt-4 max-w-2xl text-[1.05rem] leading-7 text-ink-soft">
+        Every figure below is drawn from the project's
+        <a class="font-medium text-accent-700 underline decoration-accent-300 underline-offset-2 hover:text-accent-800" href={RESULTS_URL}>results in the repository</a>.
+        The four GPT-2 numbers are verified from CSVs; the broader-model results come from the
+        SPAR cohort and are reported, not yet independently reproduced here.
+      </p>
+
+      <table class="mt-6 w-full border-collapse text-left">
+        <thead>
+          <tr class="border-y border-ink font-sans text-[0.7rem] uppercase tracking-widest text-ink-soft">
+            <th class="py-2 pr-3 font-semibold">Result</th>
+            <th class="py-2 pr-3 font-semibold">Model</th>
+            <th class="hidden py-2 pr-3 font-semibold sm:table-cell">What it shows</th>
+            <th class="py-2 text-right font-semibold">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            scoreboard.map((row) => (
+              <tr class="border-b border-rule align-top">
+                <td class="py-3 pr-3">
+                  <div class="font-display text-2xl font-bold text-ink">{row.value}</div>
+                  <div class="font-sans text-xs uppercase tracking-wide text-ink-soft">{row.where}</div>
+                </td>
+                <td class="py-3 pr-3 font-sans text-sm text-ink">{row.model}</td>
+                <td class="hidden py-3 pr-3 text-[0.95rem] leading-6 text-ink-soft sm:table-cell">{row.note}</td>
+                <td class={`py-3 text-right font-sans text-xs font-semibold uppercase tracking-wide ${statusStyle[row.status]}`}>
+                  {row.status}
+                </td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+      <p class="mt-3 font-sans text-xs text-ink-soft">
+        Headline GPT-2 figures are single-model (124M).{" "}
+        <a class="text-accent-700 underline decoration-accent-300 underline-offset-2 hover:text-accent-800" href={`${BASE}what-we-score`}>
+          See the live, data-driven breakdown →
         </a>
-        <a href={GOOD_FIRST_ISSUES_URL} class="rounded-lg border border-slate-700 px-5 py-2.5 font-medium text-slate-200 hover:border-slate-500">
-          Find a good first issue
-        </a>
+      </p>
+    </div>
+  </section>
+
+  <!-- What we've done -->
+  <section class="mx-auto max-w-5xl px-4 py-10">
+    <div class="mx-auto max-w-4xl">
+      <p class="kicker">The Work So Far</p>
+      <h2 class="font-display mt-2 text-3xl font-bold text-ink">What we've done</h2>
+      <hr class="rule mt-3" />
+      <div class="mt-6 grid gap-x-10 gap-y-7 md:grid-cols-2">
+        {
+          done.map((item) => (
+            <div>
+              <h3 class="font-display text-xl font-bold text-ink">{item.title}</h3>
+              <p class="mt-1.5 text-[1.02rem] leading-7 text-ink-soft" set:html={item.body} />
+            </div>
+          ))
+        }
       </div>
     </div>
   </section>
 
-  <section class="mx-auto max-w-5xl px-4 py-14">
-    <div class="grid gap-5 sm:grid-cols-3">
-      {
-        funnel.map((card) => (
-          <a
-            href={card.href}
-            class="group rounded-2xl border border-slate-800 bg-slate-900/60 p-6 transition hover:border-indigo-500/50 hover:bg-slate-900"
-          >
-            <div class="text-3xl">{card.emoji}</div>
-            <h2 class="mt-3 text-xl font-bold text-white">{card.title}</h2>
-            <p class="mt-2 text-sm text-slate-400">{card.body}</p>
-            <span class="mt-4 inline-block text-sm font-medium text-indigo-400 group-hover:text-indigo-300">
-              {card.title === "Contribute" ? "Browse issues →" : "Learn more →"}
-            </span>
-          </a>
-        ))
-      }
+  <!-- What's missing -->
+  <section class="border-y border-rule bg-stone-50/70">
+    <div class="mx-auto max-w-4xl px-4 py-12">
+      <p class="kicker-accent">Open Questions</p>
+      <h2 class="font-display mt-2 text-3xl font-bold text-ink">What's missing</h2>
+      <p class="mt-3 max-w-2xl text-[1.05rem] leading-7 text-ink-soft">
+        A safety project earns trust by being honest about its gaps. Here is what these results do
+        <em>not</em> yet establish.
+      </p>
+      <ul class="mt-6 grid gap-x-10 gap-y-5 md:grid-cols-2">
+        {
+          missing.map((item) => (
+            <li class="border-l-2 border-accent-300 pl-4">
+              <span class="font-sans text-sm font-bold uppercase tracking-wide text-ink">{item.h}</span>
+              <p class="mt-1 text-[1.0rem] leading-7 text-ink-soft" set:html={item.body} />
+            </li>
+          ))
+        }
+      </ul>
     </div>
   </section>
 
-  <section class="border-t border-slate-800 bg-slate-900/30">
-    <div class="mx-auto grid max-w-5xl gap-8 px-4 py-14 md:grid-cols-2">
-      <div>
-        <h2 class="text-2xl font-bold text-white">Why a safety project?</h2>
-        <p class="mt-3 text-slate-300">
-          The same internal "time-horizon" signal that decides whether a model prefers a small reward now
-          or a larger one later is also linked to how it behaves over long, repetitive interactions — where
-          safeguards can quietly weaken.
-        </p>
-        <p class="mt-3 text-slate-400">
-          If we can detect that signal, we can build monitors that flag impending failures early. That's a
-          concrete, tractable safety contribution — and you don't need a PhD to help.
-        </p>
-      </div>
-      <div class="rounded-2xl border border-slate-800 bg-slate-950 p-6">
-        <h3 class="font-semibold text-white">Jump in</h3>
-        <ul class="mt-3 space-y-2 text-sm text-slate-300">
-          <li>🌱 Pick a <a class="text-indigo-400 underline" href={GOOD_FIRST_ISSUES_URL}>good first issue</a></li>
-          <li>📊 See <a class="text-indigo-400 underline" href={`${BASE}what-we-score`}>what we score</a></li>
-          <li>🧭 Read the <a class="text-indigo-400 underline" href={`${BASE}understand`}>plain-language intro</a></li>
-          <li>💻 Open the full <a class="text-indigo-400 underline" href={ISSUES_URL}>issue tracker</a></li>
-        </ul>
-      </div>
+  <!-- Contribute -->
+  <section class="mx-auto max-w-5xl px-4 py-12 text-center">
+    <p class="kicker-accent">Join In</p>
+    <h2 class="font-display mt-2 text-3xl font-bold text-ink">Help close the gaps</h2>
+    <p class="mx-auto mt-3 max-w-xl text-[1.05rem] leading-7 text-ink-soft">
+      No PhD, GPU, or interpretability background required. Every piece of work is a GitHub issue —
+      pick one and go.
+    </p>
+    <div class="mt-6 flex flex-wrap justify-center gap-3 font-sans text-sm font-semibold uppercase tracking-wide">
+      <a href={GOOD_FIRST_ISSUES_URL} class="rounded-sm bg-ink px-5 py-2.5 text-paper transition hover:bg-accent-800">
+        Find a good first issue
+      </a>
+      <a href={`${BASE}understand`} class="rounded-sm border border-ink px-5 py-2.5 text-ink transition hover:border-accent-700 hover:text-accent-700">
+        Read the intro
+      </a>
+      <a href={ISSUES_URL} class="rounded-sm border border-ink px-5 py-2.5 text-ink transition hover:border-accent-700 hover:text-accent-700">
+        Issue tracker
+      </a>
     </div>
+    <p class="mt-5 font-sans text-xs uppercase tracking-widest text-ink-soft">
+      <a class="hover:text-ink" href={CONTRIBUTING_URL}>Contributor guide</a> ·
+      <a class="hover:text-ink" href={RESEARCH_PROGRAM_URL}>Research program</a>
+    </p>
   </section>
 </BaseLayout>

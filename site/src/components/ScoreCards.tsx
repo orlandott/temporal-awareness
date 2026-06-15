@@ -70,24 +70,24 @@ function ProbeChart({ sep }: { sep: Separability }) {
     <svg viewBox={`0 0 ${W} ${H}`} className="w-full" role="img" aria-label="Probe accuracy by layer">
       {ticks.map((t) => (
         <g key={t}>
-          <line x1={padL} x2={W - padR} y1={y(t)} y2={y(t)} stroke="#1e293b" strokeWidth={1} />
-          <text x={4} y={y(t) + 4} fill="#94a3b8" fontSize={11}>
+          <line x1={padL} x2={W - padR} y1={y(t)} y2={y(t)} stroke="#e7e5e4" strokeWidth={1} />
+          <text x={4} y={y(t) + 4} fill="#78716c" fontSize={11}>
             {Math.round(t * 100)}%
           </text>
         </g>
       ))}
-      <polyline points={line("train_accuracy")} fill="none" stroke="#818cf8" strokeWidth={2.5} />
-      <polyline points={line("test_accuracy")} fill="none" stroke="#34d399" strokeWidth={2.5} strokeDasharray="4 3" />
-      <circle cx={x(sep.peak_train.layer)} cy={y(sep.peak_train.accuracy)} r={4} fill="#818cf8" />
-      <text x={x(sep.peak_train.layer)} y={y(sep.peak_train.accuracy) - 8} fill="#c7d2fe" fontSize={11} textAnchor="middle">
+      <polyline points={line("train_accuracy")} fill="none" stroke="#6d28d9" strokeWidth={2.5} />
+      <polyline points={line("test_accuracy")} fill="none" stroke="#0f766e" strokeWidth={2.5} strokeDasharray="4 3" />
+      <circle cx={x(sep.peak_train.layer)} cy={y(sep.peak_train.accuracy)} r={4} fill="#6d28d9" />
+      <text x={x(sep.peak_train.layer)} y={y(sep.peak_train.accuracy) - 8} fill="#5b21b6" fontSize={11} textAnchor="middle">
         Layer {sep.peak_train.layer}: {Math.round(sep.peak_train.accuracy * 100)}%
       </text>
       {sep.layers.map((r) => (
-        <text key={r.layer} x={x(r.layer)} y={H - 8} fill="#64748b" fontSize={10} textAnchor="middle">
+        <text key={r.layer} x={x(r.layer)} y={H - 8} fill="#a8a29e" fontSize={10} textAnchor="middle">
           {r.layer}
         </text>
       ))}
-      <text x={padL} y={H - 8} fill="#64748b" fontSize={10} textAnchor="middle" />
+      <text x={padL} y={H - 8} fill="#a8a29e" fontSize={10} textAnchor="middle" />
     </svg>
   );
 }
@@ -108,49 +108,49 @@ export default function ScoreCards() {
 
   if (error) {
     return (
-      <div className="rounded-lg border border-amber-700/50 bg-amber-950/30 p-5 text-sm text-amber-200">
+      <div className="rounded-lg border border-amber-300 bg-amber-50 p-5 text-sm text-amber-800">
         Couldn't load the scored results.{" "}
-        <a className="underline" href={RESULTS_URL}>
+        <a className="font-medium text-accent-700 underline" href={RESULTS_URL}>
           Browse them on GitHub
         </a>
-        . (Run <code className="rounded bg-slate-800 px-1">npm run data</code> to generate them locally.)
+        . (Run <code className="rounded bg-stone-100 px-1 font-sans text-accent-800">npm run data</code> to generate them locally.)
       </div>
     );
   }
   if (!data) {
-    return <div className="animate-pulse text-slate-400">Loading verified results…</div>;
+    return <div className="animate-pulse font-sans text-ink-soft">Loading verified results…</div>;
   }
 
   return (
     <div className="space-y-10">
       <div className="grid gap-4 sm:grid-cols-2">
         {data.claims.map((c) => (
-          <div key={c.id} className="rounded-xl border border-slate-800 bg-slate-900/60 p-5">
+          <div key={c.id} className="rounded-lg border border-rule bg-white p-5">
             <div className="flex items-start justify-between gap-3">
-              <div className="text-3xl font-extrabold text-white">{c.value}</div>
+              <div className="font-display text-3xl font-bold text-ink">{c.value}</div>
               <span
-                className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+                className={`rounded-full px-2 py-0.5 font-sans text-xs font-semibold uppercase tracking-wide ${
                   c.status === "verified"
-                    ? "bg-emerald-500/15 text-emerald-300"
-                    : "bg-amber-500/15 text-amber-300"
+                    ? "bg-emerald-50 text-emerald-700"
+                    : "bg-amber-50 text-amber-700"
                 }`}
               >
                 {c.status}
               </span>
             </div>
-            <div className="mt-2 font-semibold text-slate-100">{c.claim}</div>
-            <div className="mt-1 text-sm text-slate-400">{c.metric}</div>
-            <div className="mt-3 font-mono text-xs text-slate-500">{c.source}</div>
+            <div className="mt-2 font-semibold text-ink">{c.claim}</div>
+            <div className="mt-1 text-sm text-ink-soft">{c.metric}</div>
+            <div className="mt-3 font-mono text-xs text-stone-500">{c.source}</div>
           </div>
         ))}
       </div>
 
-      <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-5">
-        <h3 className="font-semibold text-white">Probe accuracy by layer</h3>
-        <p className="mt-1 text-sm text-slate-400">
+      <div className="rounded-lg border border-rule bg-white p-5">
+        <h3 className="font-display text-lg font-bold text-ink">Probe accuracy by layer</h3>
+        <p className="mt-1 font-sans text-sm text-ink-soft">
           Time-horizon is readable from a single layer and peaks mid-network.{" "}
-          <span className="text-indigo-300">— train</span>,{" "}
-          <span className="text-emerald-300">- - test</span>
+          <span className="text-accent-700">— train</span>,{" "}
+          <span className="text-teal-700">- - test</span>
         </p>
         <div className="mt-3">
           <ProbeChart sep={data.separability} />
@@ -160,14 +160,14 @@ export default function ScoreCards() {
       {data.figures.length > 0 && (
         <div className="grid gap-4 sm:grid-cols-3">
           {data.figures.map((f) => (
-            <figure key={f.name} className="rounded-xl border border-slate-800 bg-slate-900/60 p-3">
+            <figure key={f.name} className="rounded-lg border border-rule bg-white p-3">
               <img
                 src={asset(`figures/${f.file}`)}
                 alt={f.caption}
                 loading="lazy"
                 className="rounded bg-white"
               />
-              <figcaption className="mt-2 text-xs text-slate-400">{f.caption}</figcaption>
+              <figcaption className="mt-2 font-sans text-xs text-ink-soft">{f.caption}</figcaption>
             </figure>
           ))}
         </div>

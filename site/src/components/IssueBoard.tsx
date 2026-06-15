@@ -13,13 +13,15 @@ const THRUSTS = ["foundations", "mechanisms", "robustness", "theory"] as const;
 
 function Badge({ children, tone = "slate" }: { children: React.ReactNode; tone?: string }) {
   const tones: Record<string, string> = {
-    slate: "bg-slate-800 text-slate-300",
-    indigo: "bg-indigo-500/15 text-indigo-300",
-    emerald: "bg-emerald-500/15 text-emerald-300",
-    amber: "bg-amber-500/15 text-amber-300",
-    rose: "bg-rose-500/15 text-rose-300",
+    slate: "bg-stone-100 text-ink-soft",
+    accent: "bg-accent-100 text-accent-800",
+    emerald: "bg-emerald-50 text-emerald-700",
+    amber: "bg-amber-50 text-amber-700",
+    rose: "bg-rose-50 text-rose-700",
   };
-  return <span className={`rounded px-2 py-0.5 text-xs font-medium ${tones[tone]}`}>{children}</span>;
+  return (
+    <span className={`rounded px-2 py-0.5 font-sans text-xs font-medium ${tones[tone]}`}>{children}</span>
+  );
 }
 
 export default function IssueBoard() {
@@ -55,9 +57,9 @@ export default function IssueBoard() {
 
   if (error) {
     return (
-      <div className="rounded-lg border border-amber-700/50 bg-amber-950/30 p-5 text-sm text-amber-200">
+      <div className="rounded-lg border border-amber-300 bg-amber-50 p-5 text-sm text-amber-800">
         {error}{" "}
-        <a className="underline" href={ISSUES_URL}>
+        <a className="font-medium text-accent-700 underline" href={ISSUES_URL}>
           Open the issues on GitHub
         </a>
         .
@@ -65,18 +67,18 @@ export default function IssueBoard() {
     );
   }
   if (!issues) {
-    return <div className="animate-pulse text-slate-400">Loading open issues from GitHub…</div>;
+    return <div className="animate-pulse font-sans text-ink-soft">Loading open issues from GitHub…</div>;
   }
 
   return (
-    <div>
-      <div className="mb-5 flex flex-wrap items-end gap-3">
-        <label className="text-sm">
-          <span className="mb-1 block text-slate-400">Difficulty</span>
+    <div className="font-sans">
+      <div className="mb-5 flex flex-wrap items-end gap-3 text-sm">
+        <label>
+          <span className="mb-1 block text-ink-soft">Difficulty</span>
           <select
             value={difficulty}
             onChange={(e) => setDifficulty(e.target.value)}
-            className="rounded border border-slate-700 bg-slate-900 px-2 py-1.5 text-slate-200"
+            className="rounded border border-stone-300 bg-white px-2 py-1.5 text-ink"
           >
             <option value="all">All</option>
             <option value="good-first">Good first issue</option>
@@ -85,12 +87,12 @@ export default function IssueBoard() {
             <option value="unlabeled">Untriaged</option>
           </select>
         </label>
-        <label className="text-sm">
-          <span className="mb-1 block text-slate-400">Thrust</span>
+        <label>
+          <span className="mb-1 block text-ink-soft">Thrust</span>
           <select
             value={thrust}
             onChange={(e) => setThrust(e.target.value)}
-            className="rounded border border-slate-700 bg-slate-900 px-2 py-1.5 capitalize text-slate-200"
+            className="rounded border border-stone-300 bg-white px-2 py-1.5 capitalize text-ink"
           >
             <option value="all">All</option>
             {THRUSTS.map((t) => (
@@ -100,48 +102,48 @@ export default function IssueBoard() {
             ))}
           </select>
         </label>
-        <label className="text-sm">
-          <span className="mb-1 block text-slate-400">Track</span>
+        <label>
+          <span className="mb-1 block text-ink-soft">Track</span>
           <select
             value={track}
             onChange={(e) => setTrack(e.target.value)}
-            className="rounded border border-slate-700 bg-slate-900 px-2 py-1.5 text-slate-200"
+            className="rounded border border-stone-300 bg-white px-2 py-1.5 text-ink"
           >
             <option value="all">All</option>
             <option value="A">A · probe infra</option>
             <option value="B">B · experiment</option>
           </select>
         </label>
-        <label className="flex-1 text-sm">
-          <span className="mb-1 block text-slate-400">Search</span>
+        <label className="flex-1">
+          <span className="mb-1 block text-ink-soft">Search</span>
           <input
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder="Filter by title…"
-            className="w-full rounded border border-slate-700 bg-slate-900 px-3 py-1.5 text-slate-200 placeholder:text-slate-500"
+            className="w-full rounded border border-stone-300 bg-white px-3 py-1.5 text-ink placeholder:text-stone-400"
           />
         </label>
       </div>
 
-      <p className="mb-4 text-sm text-slate-400">
-        Showing <span className="text-slate-200">{filtered.length}</span> of {issues.length} open issues
+      <p className="mb-4 text-sm text-ink-soft">
+        Showing <span className="text-ink">{filtered.length}</span> of {issues.length} open issues
         {goodFirstCount > 0 && (
           <>
-            {" "}· <span className="text-indigo-300">{goodFirstCount} good first issue{goodFirstCount === 1 ? "" : "s"}</span>
+            {" "}· <span className="text-accent-700">{goodFirstCount} good first issue{goodFirstCount === 1 ? "" : "s"}</span>
           </>
         )}
       </p>
 
       <ul className="space-y-3">
         {filtered.map((it) => (
-          <li key={it.number} className="rounded-xl border border-slate-800 bg-slate-900/60 p-4 transition hover:border-slate-700">
+          <li key={it.number} className="rounded-lg border border-rule bg-white p-4 transition hover:border-stone-400">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <a href={it.url} className="font-semibold text-white hover:text-indigo-300">
-                  <span className="text-slate-500">#{it.number}</span> {it.title}
+                <a href={it.url} className="font-serif text-lg font-semibold text-ink hover:text-accent-700">
+                  <span className="text-stone-400">#{it.number}</span> {it.title}
                 </a>
                 <div className="mt-2 flex flex-wrap gap-1.5">
-                  {it.facets.difficulty === "good-first" && <Badge tone="indigo">good first issue</Badge>}
+                  {it.facets.difficulty === "good-first" && <Badge tone="accent">good first issue</Badge>}
                   {it.facets.type && <Badge tone="emerald">{it.facets.type}</Badge>}
                   {it.facets.track && <Badge>track {it.facets.track}</Badge>}
                   {it.facets.thrust && <Badge tone="amber">{it.facets.thrust}</Badge>}
@@ -153,7 +155,7 @@ export default function IssueBoard() {
               </div>
               <a
                 href={it.url}
-                className="shrink-0 rounded bg-indigo-500 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-400"
+                className="shrink-0 rounded-sm bg-ink px-3 py-1.5 text-sm font-semibold uppercase tracking-wide text-paper transition hover:bg-accent-800"
               >
                 Claim →
               </a>
@@ -162,9 +164,9 @@ export default function IssueBoard() {
         ))}
       </ul>
       {filtered.length === 0 && (
-        <p className="rounded-lg border border-slate-800 bg-slate-900/60 p-5 text-sm text-slate-400">
+        <p className="rounded-lg border border-rule bg-white p-5 text-sm text-ink-soft">
           No issues match these filters. Try widening them, or{" "}
-          <a className="underline" href={ISSUES_URL}>
+          <a className="font-medium text-accent-700 underline" href={ISSUES_URL}>
             browse all issues
           </a>
           .
