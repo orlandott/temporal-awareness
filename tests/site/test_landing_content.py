@@ -18,19 +18,9 @@ def test_index_exists() -> None:
 
 
 def test_grounded_numbers_present() -> None:
+    # Plain-language page keeps the two accessible headline accuracies.
     src = _source()
-    tokens = [
-        "92.5",
-        "Layer 8",
-        "84.0",
-        "Layer 6",
-        "99.2",
-        "Layer 26",
-        "Layers 29",
-        "83.1",
-        "91.3",
-    ]
-    for token in tokens:
+    for token in ["92.5", "99.2"]:
         assert token in src, f"expected grounded fact {token!r} on the landing page"
 
 
