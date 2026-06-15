@@ -1,0 +1,28 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import ExploreEmbed from "../components/ExploreEmbed.tsx";
+import { REPO_URL } from "../lib/site";
+---
+
+<BaseLayout title="Explore">
+  <section class="mx-auto max-w-4xl px-4 pt-12">
+    <h1 class="text-3xl font-bold text-white">Explore the geometry</h1>
+    <p class="mt-4 text-slate-300">
+      The temporal signal isn't just a number — it has shape. This interactive explorer (the project's
+      <code class="rounded bg-slate-800 px-1 text-indigo-200">geoapp</code>) lets you rotate through PCA
+      projections of model activations, watch how the short-term vs long-term split forms across layers,
+      and inspect alignment heatmaps.
+    </p>
+  </section>
+
+  <section class="mx-auto max-w-4xl px-4 py-8">
+    <ExploreEmbed client:load />
+  </section>
+
+  <section class="mx-auto max-w-4xl px-4 pb-16 text-sm text-slate-400">
+    Built with React, Three.js and a FastAPI backend that serves pre-computed embeddings. Source:
+    <a class="text-indigo-400 underline" href={`${REPO_URL}/tree/main/src/intertemporal/geoapp`}>
+      src/intertemporal/geoapp
+    </a>.
+  </section>
+</BaseLayout>

@@ -1,0 +1,63 @@
+---
+layout: ../layouts/BaseLayout.astro
+title: Understand
+description: What temporal awareness is, and why it matters for AI safety — in plain language.
+prose: true
+---
+
+import { BASE, REPO_URL } from "../lib/site";
+
+# What is temporal awareness?
+
+Large language models constantly make decisions that play out over **time**. *Answer now, or
+think longer? Optimize for this turn, or the whole conversation? Take the sure thing today, or
+the bigger payoff later?*
+
+**Temporal awareness** is how a model internally represents these *time horizons* — whether
+it's leaning short-term or long-term — and whether that internal sense matches what it actually
+says out loud.
+
+## Internal vs. stated horizon
+
+Here's the key distinction this project is built around.
+
+- A model's **stated** horizon is what it *tells* you: "I'd recommend the long-term plan."
+- Its **internal** horizon is what its *activations* imply as it computes the answer.
+
+These don't always agree. A model might *say* something short-term and harmless while its
+internal state is oriented toward long-horizon planning — or vice versa. **That gap is the
+safety-relevant signal.** If we can measure it, we can notice when a model's words and its
+internal "intentions" come apart.
+
+> Formally, the project grounds this in *intertemporal preference*: a value function that
+> weighs a reward by how far away in time it is, and an "internal horizon" — the point where
+> the model stops caring about the future. The question is whether that internal horizon
+> matches the one the model states. See the <a href={REPO_URL + "/blob/main/docs/RESEARCH_PROGRAM.md"}>research program</a>.
+
+## Why it matters for AI safety
+
+Three reasons this is more than a curiosity:
+
+1. **Agents now run for a long time.** As models are deployed in long, autonomous loops —
+   dozens of conversational turns, hundreds of documents — their behavior can *drift*. The
+   project finds that **safety behavior in particular can degrade** over repetitive sessions,
+   with some safeguards weakening faster than others.
+
+2. **Words are not enough to monitor.** If we only watch what a model says, we miss internal
+   shifts until they surface as bad outputs. Reading the internal time-horizon gives us an
+   **earlier** signal.
+
+3. **It's measurable today.** A model's temporal scope turns out to be **linearly readable**
+   from a single layer of activations. That makes a cheap, real-time *probe* possible — the
+   kind of concrete, deployable monitor that safety work needs.
+
+## What this project actually does
+
+- **Detect** temporal scope from internal representations (linear probes).
+- **Steer** a model's temporal orientation by nudging its activations.
+- **Locate** the circuits that compute temporal decisions (activation patching).
+- **Stress-test** all of the above: when do these representations fail?
+
+See the verified numbers on <a href={BASE + "what-we-score"}>What we score</a>, poke at the
+geometry on <a href={BASE + "explore"}>Explore</a>, then <a href={BASE + "contribute"}>pick an
+issue</a> and join in.

@@ -1,0 +1,103 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { BASE, ISSUES_URL, GOOD_FIRST_ISSUES_URL } from "../lib/site";
+
+const funnel = [
+  {
+    href: `${BASE}understand`,
+    emoji: "🧠",
+    title: "Understand",
+    body: "What temporal awareness is, and why it matters for AI safety — in plain language.",
+  },
+  {
+    href: `${BASE}what-we-score`,
+    emoji: "📊",
+    title: "What we score",
+    body: "The actual metrics, with verified numbers: can we read a model's time-horizon off its activations?",
+  },
+  {
+    href: `${BASE}contribute`,
+    emoji: "🌱",
+    title: "Contribute",
+    body: "Browse open research issues and claim one. New to AI safety? This is built for you.",
+  },
+];
+---
+
+<BaseLayout title="Temporal Awareness">
+  <section class="relative overflow-hidden border-b border-slate-800">
+    <div class="absolute inset-0 bg-gradient-to-b from-indigo-950/40 to-transparent"></div>
+    <div class="relative mx-auto max-w-3xl px-4 py-20 text-center">
+      <span class="inline-block rounded-full border border-indigo-500/40 bg-indigo-500/10 px-3 py-1 text-xs font-medium text-indigo-300">
+        The first Open Safety Project
+      </span>
+      <h1 class="mt-5 text-4xl font-extrabold leading-tight text-white sm:text-5xl">
+        Can we read what an AI is <span class="text-indigo-400">thinking about time?</span>
+      </h1>
+      <p class="mx-auto mt-5 max-w-2xl text-lg text-slate-300">
+        Temporal awareness is how a model internally represents <strong class="text-white">time horizons</strong> —
+        whether it's "thinking" short-term or long-term — and whether that inner sense matches what it
+        actually says.
+      </p>
+      <p class="mx-auto mt-4 max-w-2xl text-slate-400">
+        As AI agents run longer and more autonomously, their behavior — including their safety
+        behavior — can drift over time. We're learning to read that drift directly from a model's
+        activations, before it shows up in what the model says.
+      </p>
+      <div class="mt-8 flex flex-wrap justify-center gap-3">
+        <a href={`${BASE}understand`} class="rounded-lg bg-indigo-500 px-5 py-2.5 font-medium text-white hover:bg-indigo-400">
+          Start with the idea →
+        </a>
+        <a href={GOOD_FIRST_ISSUES_URL} class="rounded-lg border border-slate-700 px-5 py-2.5 font-medium text-slate-200 hover:border-slate-500">
+          Find a good first issue
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-5xl px-4 py-14">
+    <div class="grid gap-5 sm:grid-cols-3">
+      {
+        funnel.map((card) => (
+          <a
+            href={card.href}
+            class="group rounded-2xl border border-slate-800 bg-slate-900/60 p-6 transition hover:border-indigo-500/50 hover:bg-slate-900"
+          >
+            <div class="text-3xl">{card.emoji}</div>
+            <h2 class="mt-3 text-xl font-bold text-white">{card.title}</h2>
+            <p class="mt-2 text-sm text-slate-400">{card.body}</p>
+            <span class="mt-4 inline-block text-sm font-medium text-indigo-400 group-hover:text-indigo-300">
+              {card.title === "Contribute" ? "Browse issues →" : "Learn more →"}
+            </span>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="border-t border-slate-800 bg-slate-900/30">
+    <div class="mx-auto grid max-w-5xl gap-8 px-4 py-14 md:grid-cols-2">
+      <div>
+        <h2 class="text-2xl font-bold text-white">Why a safety project?</h2>
+        <p class="mt-3 text-slate-300">
+          The same internal "time-horizon" signal that decides whether a model prefers a small reward now
+          or a larger one later is also linked to how it behaves over long, repetitive interactions — where
+          safeguards can quietly weaken.
+        </p>
+        <p class="mt-3 text-slate-400">
+          If we can detect that signal, we can build monitors that flag impending failures early. That's a
+          concrete, tractable safety contribution — and you don't need a PhD to help.
+        </p>
+      </div>
+      <div class="rounded-2xl border border-slate-800 bg-slate-950 p-6">
+        <h3 class="font-semibold text-white">Jump in</h3>
+        <ul class="mt-3 space-y-2 text-sm text-slate-300">
+          <li>🌱 Pick a <a class="text-indigo-400 underline" href={GOOD_FIRST_ISSUES_URL}>good first issue</a></li>
+          <li>📊 See <a class="text-indigo-400 underline" href={`${BASE}what-we-score`}>what we score</a></li>
+          <li>🧭 Read the <a class="text-indigo-400 underline" href={`${BASE}understand`}>plain-language intro</a></li>
+          <li>💻 Open the full <a class="text-indigo-400 underline" href={ISSUES_URL}>issue tracker</a></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

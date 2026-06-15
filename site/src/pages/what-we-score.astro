@@ -1,0 +1,63 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import ScoreCards from "../components/ScoreCards.tsx";
+import { REPO_URL, RESULTS_URL } from "../lib/site";
+
+// Illustrative only — token-level temporal scoring is open research (issue #19).
+const demoTokens: Array<{ t: string; s: number }> = [
+  { t: "Take", s: 0 }, { t: "the", s: 0 }, { t: "guaranteed", s: -0.7 }, { t: "payout", s: -0.5 },
+  { t: "today", s: -0.9 }, { t: "instead", s: 0 }, { t: "of", s: 0 }, { t: "investing", s: 0.6 },
+  { t: "for", s: 0.2 }, { t: "decades", s: 0.95 },
+];
+const tone = (s: number) =>
+  s > 0.3 ? "bg-emerald-500/20 text-emerald-200"
+  : s < -0.3 ? "bg-rose-500/20 text-rose-200"
+  : "text-slate-300";
+---
+
+<BaseLayout title="What we score">
+  <section class="mx-auto max-w-3xl px-4 pt-12">
+    <h1 class="text-3xl font-bold text-white">What we score</h1>
+    <p class="mt-4 text-slate-300">
+      Every number here is sourced from the project's <a class="text-indigo-400 underline" href={RESULTS_URL}>verified results</a>.
+      The core question: can we read a model's sense of <strong class="text-white">time-horizon</strong>
+      directly from its internal activations — and does it hold up?
+    </p>
+  </section>
+
+  <section class="mx-auto max-w-3xl px-4 py-10">
+    <ScoreCards client:load />
+  </section>
+
+  <section class="mx-auto max-w-3xl px-4 pb-6">
+    <h2 class="text-2xl font-bold text-white">Token-level temporal score</h2>
+    <p class="mt-2 text-slate-400">
+      Like sentiment analysis colors words positive/negative, we can score each token by how much it pulls
+      toward <span class="text-rose-300">short-term</span> or <span class="text-emerald-300">long-term</span>.
+      This example is illustrative — it's an active research direction
+      (<a class="text-indigo-400 underline" href={`${REPO_URL}/issues/19`}>issue #19</a>).
+    </p>
+    <p class="mt-4 rounded-xl border border-slate-800 bg-slate-900/60 p-5 text-lg leading-loose">
+      {demoTokens.map((tok) => (
+        <span class={`rounded px-1 ${tone(tok.s)}`}>{tok.t} </span>
+      ))}
+    </p>
+  </section>
+
+  <section class="mx-auto max-w-3xl px-4 pb-16">
+    <div class="rounded-2xl border border-amber-700/40 bg-amber-950/20 p-6">
+      <h2 class="text-xl font-bold text-amber-200">Why this is a safety signal</h2>
+      <p class="mt-3 text-slate-300">
+        The project's degradation experiments find that a model's safety behavior can weaken over long or
+        repetitive sessions — for example, reported drops in refusal rate across repeated turns, with some
+        categories (like misinformation) eroding faster than others.
+      </p>
+      <p class="mt-3 text-slate-400">
+        Because the temporal signal is linearly readable, a lightweight probe can act as an early-warning
+        monitor — flagging drift before it surfaces in the model's outputs. See the
+        <a class="text-indigo-400 underline" href={`${REPO_URL}/blob/main/results/experiment_results_compiled.md`}> compiled results</a>
+        and the <a class="text-indigo-400 underline" href={`${REPO_URL}/blob/main/docs/RESEARCH_PROGRAM.md`}>research program</a>.
+      </p>
+    </div>
+  </section>
+</BaseLayout>

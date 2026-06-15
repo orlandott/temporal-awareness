@@ -1,0 +1,104 @@
+---
+import "../styles/global.css";
+import { BASE, REPO_URL, ISSUES_URL } from "../lib/site";
+
+interface Props {
+  title?: string;
+  description?: string;
+  prose?: boolean;
+  frontmatter?: { title?: string; description?: string; prose?: boolean };
+}
+
+const props = Astro.props as Props;
+const fm = props.frontmatter ?? {};
+const title = props.title ?? fm.title ?? "Temporal Awareness";
+const description =
+  props.description ??
+  fm.description ??
+  "An Open Safety Project: detecting how AI models internally represent time — and why it matters.";
+const prose = props.prose ?? fm.prose ?? false;
+const fullTitle = title === "Temporal Awareness" ? title : `${title} · Temporal Awareness`;
+
+const nav = [
+  { href: `${BASE}`, label: "Home" },
+  { href: `${BASE}understand`, label: "Understand" },
+  { href: `${BASE}what-we-score`, label: "What we score" },
+  { href: `${BASE}explore`, label: "Explore" },
+  { href: `${BASE}contribute`, label: "Contribute" },
+];
+const path = Astro.url.pathname;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="flex min-h-screen flex-col font-sans">
+    <header class="sticky top-0 z-30 border-b border-slate-800 bg-slate-950/80 backdrop-blur">
+      <nav class="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
+        <a href={`${BASE}`} class="flex items-center gap-2 font-bold text-white">
+          <span class="grid h-7 w-7 place-items-center rounded bg-indigo-500 text-sm">⏳</span>
+          <span>Temporal Awareness</span>
+        </a>
+        <div class="hidden items-center gap-1 text-sm sm:flex">
+          {
+            nav.map((item) => {
+              const active = path === item.href || (item.href !== BASE && path.startsWith(item.href));
+              return (
+                <a
+                  href={item.href}
+                  class={`rounded px-3 py-1.5 transition ${
+                    active ? "bg-slate-800 text-white" : "text-slate-300 hover:text-white"
+                  }`}
+                >
+                  {item.label}
+                </a>
+              );
+            })
+          }
+          <a
+            href={ISSUES_URL}
+            class="ml-2 rounded bg-indigo-500 px-3 py-1.5 font-medium text-white hover:bg-indigo-400"
+          >
+            Browse issues
+          </a>
+        </div>
+      </nav>
+    </header>
+
+    {
+      prose ? (
+        <main class="prose-site mx-auto w-full max-w-3xl flex-1 px-4 py-12">
+          <slot />
+        </main>
+      ) : (
+        <main class="flex-1">
+          <slot />
+        </main>
+      )
+    }
+
+    <footer class="border-t border-slate-800 py-8 text-sm text-slate-400">
+      <div class="mx-auto flex max-w-5xl flex-col gap-2 px-4 sm:flex-row sm:items-center sm:justify-between">
+        <p>
+          An <span class="text-slate-200">Open Safety Project</span> · MIT licensed
+        </p>
+        <div class="flex gap-4">
+          <a href={REPO_URL} class="hover:text-white">GitHub</a>
+          <a href={`${BASE}contribute`} class="hover:text-white">Contribute</a>
+          <a href={`${BASE}start-here`} class="hover:text-white">Start here</a>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
