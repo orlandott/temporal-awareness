@@ -1,0 +1,68 @@
+# Label taxonomy for the Open Safety Project, mirroring docs/RESEARCH_PROGRAM.md.
+# Synced to GitHub by .github/workflows/labels-sync.yml.
+
+# --- Contributor on-ramp ---
+- name: "good first issue"
+  color: "7057ff"
+  description: "Scoped and mentored — a great place to start."
+- name: "help wanted"
+  color: "008672"
+  description: "Maintainers would love a hand on this."
+- name: "claimed"
+  color: "bfdadc"
+  description: "Someone is actively working on this."
+- name: "needs-triage"
+  color: "ededed"
+  description: "Newly filed; awaiting maintainer review."
+
+# --- Type ---
+- name: "research-question"
+  color: "d4c5f9"
+  description: "An open question to investigate."
+- name: "experiment"
+  color: "c2e0c6"
+  description: "A concrete experiment with a hypothesis and metric."
+- name: "infrastructure"
+  color: "fef2c0"
+  description: "Tooling, data pipelines, site, or dev experience."
+
+# --- Track (see RESEARCH_PROGRAM.md) ---
+- name: "track:A-probe-infra"
+  color: "0e8a16"
+  description: "Shared probe infrastructure (sequential)."
+- name: "track:B-experiment"
+  color: "1d76db"
+  description: "Standalone experiment (parallelizable)."
+
+# --- Thrust ---
+- name: "thrust:foundations"
+  color: "fbca04"
+  description: "Do probes detect genuine temporal semantics?"
+- name: "thrust:mechanisms"
+  color: "5319e7"
+  description: "What circuits/features implement temporal reasoning?"
+- name: "thrust:robustness"
+  color: "d93f0b"
+  description: "When and how do temporal representations fail?"
+- name: "thrust:theory"
+  color: "0052cc"
+  description: "Frameworks from cognitive science."
+
+# --- Difficulty ---
+- name: "difficulty:intermediate"
+  color: "c5def5"
+  description: "Some ML / interpretability background helpful."
+- name: "difficulty:research"
+  color: "b60205"
+  description: "Open-ended; expect to define the approach."
+
+# --- Status ---
+- name: "needs-dataset"
+  color: "e99695"
+  description: "Blocked on a purpose-built dataset."
+- name: "in-progress"
+  color: "fbca04"
+  description: "Actively being worked on."
+- name: "blocked"
+  color: "b60205"
+  description: "Blocked on a dependency."

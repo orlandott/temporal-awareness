@@ -1,0 +1,29 @@
+name: Sync labels
+
+# Keeps GitHub labels in sync with .github/labels.yml (the Open Safety Project taxonomy).
+# Run manually from the Actions tab, or automatically when labels.yml changes.
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/labels.yml"
+      - ".github/workflows/labels-sync.yml"
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Sync labels from labels.yml
+        uses: crazy-max/ghaction-github-labeler@v5
+        with:
+          yaml-file: .github/labels.yml
+          # Set to false to keep labels created elsewhere; true prunes anything not in the file.
+          skip-delete: true
+          dry-run: false

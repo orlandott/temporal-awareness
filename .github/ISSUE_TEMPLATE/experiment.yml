@@ -1,0 +1,67 @@
+name: 🧪 Experiment
+description: Propose a concrete experiment with a hypothesis and a measurable outcome.
+title: "Experiment: <short title>"
+labels: ["experiment", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        An **experiment** is a concrete, runnable plan with a hypothesis and a metric.
+        If you only have a question, use the "Research question" template instead.
+  - type: textarea
+    id: hypothesis
+    attributes:
+      label: Hypothesis
+      description: What do you predict, and what would falsify it?
+    validations:
+      required: true
+  - type: textarea
+    id: method
+    attributes:
+      label: Method
+      description: Steps to run it. Reference existing scripts/modules where possible.
+    validations:
+      required: true
+  - type: input
+    id: metric
+    attributes:
+      label: Primary metric
+      description: The single number that decides the outcome (e.g. probe accuracy, recovery, correlation).
+    validations:
+      required: true
+  - type: textarea
+    id: dataset
+    attributes:
+      label: Dataset needed
+      description: Does this need a new/purpose-built dataset? Describe it, or link an existing one.
+    validations:
+      required: true
+  - type: input
+    id: models
+    attributes:
+      label: Models
+      description: Which model(s) to evaluate (e.g. GPT-2, Llama-3.1-8B-Instruct, Qwen3-8B).
+    validations:
+      required: false
+  - type: dropdown
+    id: thrust
+    attributes:
+      label: Thrust
+      options:
+        - "Foundations"
+        - "Mechanisms"
+        - "Robustness & failure modes"
+        - "Theoretical bridges"
+        - "Not sure"
+    validations:
+      required: true
+  - type: dropdown
+    id: difficulty
+    attributes:
+      label: Difficulty
+      options:
+        - "good first issue — scoped, mentored"
+        - "intermediate — some ML/interp background"
+        - "research — open-ended"
+    validations:
+      required: true

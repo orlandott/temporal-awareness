@@ -1,0 +1,45 @@
+name: 🌱 Good first issue (maintainers)
+description: File a small, well-scoped task that a newcomer can pick up with confidence.
+title: "Good first issue: <short title>"
+labels: ["good first issue", "help wanted"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this to create a newcomer-friendly task. The clearer the scope and the pointers,
+        the faster someone can succeed on their first contribution.
+  - type: textarea
+    id: task
+    attributes:
+      label: The task
+      description: What exactly should be done? Keep it small and self-contained.
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why it matters
+      description: One or two sentences on how this helps the project.
+    validations:
+      required: true
+  - type: textarea
+    id: where
+    attributes:
+      label: Where to look
+      description: Files, functions, or docs to start from (paths welcome).
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Definition of done
+      description: How the contributor knows they're finished (test passes, figure renders, etc.).
+    validations:
+      required: true
+  - type: input
+    id: skills
+    attributes:
+      label: Skills / setup needed
+      description: e.g. Python basics; no GPU required; ~2 hours.
+    validations:
+      required: false

@@ -1,0 +1,79 @@
+name: 🔬 Research question
+description: Propose a research question to investigate (a new direction or sub-question).
+title: "RQ: <one-line question>"
+labels: ["research-question", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for proposing a direction! This is an **Open Safety Project** — questions at
+        any level of polish are welcome. Fill in what you can; maintainers will help shape it.
+  - type: textarea
+    id: question
+    attributes:
+      label: Research question
+      description: State the core question in one or two sentences.
+      placeholder: Do models become less confident when reasoning about distant futures?
+    validations:
+      required: true
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Why it matters for AI safety
+      description: What safety-relevant thing would we learn? Who would use the result?
+    validations:
+      required: true
+  - type: textarea
+    id: approach
+    attributes:
+      label: Proposed approach (rough is fine)
+      description: Data, models, and method you imagine. Bullet points welcome.
+    validations:
+      required: false
+  - type: textarea
+    id: success
+    attributes:
+      label: What would success look like?
+      description: A concrete result, figure, or metric that would answer the question.
+    validations:
+      required: false
+  - type: dropdown
+    id: track
+    attributes:
+      label: Track
+      description: See docs/RESEARCH_PROGRAM.md. Track A = shared probe infrastructure; Track B = standalone experiments.
+      options:
+        - "Track B — standalone experiment"
+        - "Track A — probe infrastructure"
+        - "Not sure"
+    validations:
+      required: true
+  - type: dropdown
+    id: thrust
+    attributes:
+      label: Thrust
+      options:
+        - "Foundations"
+        - "Mechanisms"
+        - "Robustness & failure modes"
+        - "Theoretical bridges"
+        - "Not sure"
+    validations:
+      required: true
+  - type: dropdown
+    id: difficulty
+    attributes:
+      label: Difficulty
+      options:
+        - "good first issue — scoped, mentored"
+        - "intermediate — some ML/interp background"
+        - "research — open-ended"
+    validations:
+      required: true
+  - type: textarea
+    id: references
+    attributes:
+      label: References
+      description: Papers or prior issues that inform this.
+    validations:
+      required: false

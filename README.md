@@ -21,6 +21,20 @@ This project investigates how LLMs encode temporal reasoning and whether we can:
 
 [Research Program](https://github.com/justinshenk/temporal-awareness/blob/main/docs/RESEARCH_PROGRAM.md)
 
+## Contribute — an Open Safety Project
+
+This is an **Open Safety Project**: built so people **new to AI safety** can make real
+contributions with a low barrier to entry. No PhD, GPU, or interpretability background
+required to start.
+
+- 🧭 **[Start here](docs/CONTRIBUTING.md)** — what temporal awareness is, a 5-minute setup,
+  and how to open your first PR.
+- 🌱 **[Good first issues](https://github.com/justinshenk/temporal-awareness/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)** — scoped, mentored tasks.
+- 🗺️ **[Research program](docs/RESEARCH_PROGRAM.md)** — how issues map to Tracks and Thrusts.
+
+Browse all [open issues](https://github.com/justinshenk/temporal-awareness/issues) and comment
+to claim one.
+
 ## Framework
 
 We ground temporal awareness in **intertemporal preference**:

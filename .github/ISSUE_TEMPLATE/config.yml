@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: 🧭 New to AI safety? Start here
+    url: https://github.com/justinshenk/temporal-awareness/blob/main/docs/CONTRIBUTING.md
+    about: A short on-ramp — what temporal awareness is, how to pick an issue, and how to open your first PR.
+  - name: 🗺️ Browse the research program
+    url: https://github.com/justinshenk/temporal-awareness/blob/main/docs/RESEARCH_PROGRAM.md
+    about: See how issues map to Tracks and Thrusts, and where your interests fit.
