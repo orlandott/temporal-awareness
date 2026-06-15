@@ -70,8 +70,8 @@ function ProbeChart({ sep }: { sep: Separability }) {
     <svg viewBox={`0 0 ${W} ${H}`} className="w-full" role="img" aria-label="Probe accuracy by layer">
       {ticks.map((t) => (
         <g key={t}>
-          <line x1={padL} x2={W - padR} y1={y(t)} y2={y(t)} stroke="#e7e5e4" strokeWidth={1} />
-          <text x={4} y={y(t) + 4} fill="#78716c" fontSize={11}>
+          <line x1={padL} x2={W - padR} y1={y(t)} y2={y(t)} className="stroke-rule" strokeWidth={1} />
+          <text x={4} y={y(t) + 4} className="fill-ink-soft" fontSize={11}>
             {Math.round(t * 100)}%
           </text>
         </g>
@@ -79,7 +79,7 @@ function ProbeChart({ sep }: { sep: Separability }) {
       <polyline points={line("train_accuracy")} fill="none" stroke="#059669" strokeWidth={2.5} />
       <polyline points={line("test_accuracy")} fill="none" stroke="#78716c" strokeWidth={2.5} strokeDasharray="4 3" />
       <circle cx={x(sep.peak_train.layer)} cy={y(sep.peak_train.accuracy)} r={4} fill="#059669" />
-      <text x={x(sep.peak_train.layer)} y={y(sep.peak_train.accuracy) - 8} fill="#065f46" fontSize={11} textAnchor="middle">
+      <text x={x(sep.peak_train.layer)} y={y(sep.peak_train.accuracy) - 8} className="fill-accent-600" fontSize={11} textAnchor="middle">
         Layer {sep.peak_train.layer}: {Math.round(sep.peak_train.accuracy * 100)}%
       </text>
       {sep.layers.map((r) => (
@@ -108,12 +108,12 @@ export default function ScoreCards() {
 
   if (error) {
     return (
-      <div className="rounded-lg border border-amber-300 bg-amber-50 p-5 text-sm text-amber-800">
+      <div className="rounded-lg border border-amber-300 bg-amber-50 p-5 text-sm text-amber-800 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-300">
         Couldn't load the scored results.{" "}
-        <a className="font-medium text-accent-700 underline" href={RESULTS_URL}>
+        <a className="font-medium text-accent-700 underline dark:text-accent-400" href={RESULTS_URL}>
           Browse them on GitHub
         </a>
-        . (Run <code className="rounded bg-stone-100 px-1 font-sans text-accent-800">npm run data</code> to generate them locally.)
+        . (Run <code className="rounded bg-stone-100 px-1 font-sans text-accent-800 dark:bg-stone-800 dark:text-accent-300">npm run data</code> to generate them locally.)
       </div>
     );
   }
@@ -125,14 +125,14 @@ export default function ScoreCards() {
     <div className="space-y-10">
       <div className="grid gap-4 sm:grid-cols-2">
         {data.claims.map((c) => (
-          <div key={c.id} className="rounded-lg border border-rule bg-white p-5">
+          <div key={c.id} className="rounded-lg border border-rule bg-surface p-5">
             <div className="flex items-start justify-between gap-3">
               <div className="font-display text-3xl font-bold text-ink">{c.value}</div>
               <span
                 className={`rounded-full px-2 py-0.5 font-sans text-xs font-semibold uppercase tracking-wide ${
                   c.status === "verified"
-                    ? "bg-emerald-50 text-emerald-700"
-                    : "bg-amber-50 text-amber-700"
+                    ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300"
+                    : "bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300"
                 }`}
               >
                 {c.status}
@@ -145,7 +145,7 @@ export default function ScoreCards() {
         ))}
       </div>
 
-      <div className="rounded-lg border border-rule bg-white p-5">
+      <div className="rounded-lg border border-rule bg-surface p-5">
         <h3 className="font-display text-lg font-bold text-ink">Probe accuracy by layer</h3>
         <p className="mt-1 font-sans text-sm text-ink-soft">
           Time-horizon is readable from a single layer and peaks mid-network.{" "}
@@ -160,7 +160,7 @@ export default function ScoreCards() {
       {data.figures.length > 0 && (
         <div className="grid gap-6">
           {data.figures.map((f) => (
-            <figure key={f.name} className="rounded-lg border border-rule bg-white p-4">
+            <figure key={f.name} className="rounded-lg border border-rule bg-surface p-4">
               <img
                 src={asset(`figures/${f.file}`)}
                 alt={f.caption}

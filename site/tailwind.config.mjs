@@ -1,6 +1,9 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ["./src/**/*.{astro,html,js,jsx,md,mdx,ts,tsx}"],
+  // Class strategy: the whole theme is driven by a single <html class="dark">,
+  // set before paint by the inline script in BaseLayout.
+  darkMode: "class",
   theme: {
     extend: {
       fontFamily: {
@@ -11,10 +14,13 @@ export default {
         body: ["Georgia", "Cambria", "Times New Roman", "serif"],
       },
       colors: {
-        paper: "#fbfaf7", // warm near-white newsprint
-        ink: "#121212", // near-black headline/text
-        "ink-soft": "#39342e", // warm body text
-        rule: "#d8d3c8", // hairline rules
+        // Semantic tokens ride CSS variables (set in global.css), so swapping the
+        // variables under .dark re-themes every `bg-paper`/`text-ink`/etc. at once.
+        paper: "rgb(var(--color-paper) / <alpha-value>)", // page background
+        ink: "rgb(var(--color-ink) / <alpha-value>)", // headline/text
+        "ink-soft": "rgb(var(--color-ink-soft) / <alpha-value>)", // body text
+        rule: "rgb(var(--color-rule) / <alpha-value>)", // hairline rules
+        surface: "rgb(var(--color-surface) / <alpha-value>)", // raised cards/panels
         accent: {
           50: "#ecfdf5",
           100: "#d1fae5",

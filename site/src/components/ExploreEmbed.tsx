@@ -3,7 +3,7 @@ import { GEOAPP_URL, REPO_URL } from "../lib/site";
 
 function Fallback({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-lg border border-rule bg-white p-8 text-center">
+    <div className="rounded-lg border border-rule bg-surface p-8 text-center">
       <div className="mb-2 text-4xl">🧭</div>
       <h3 className="font-display text-lg font-semibold text-ink">{title}</h3>
       <div className="mx-auto mt-2 max-w-md text-sm text-ink-soft">{children}</div>
@@ -35,7 +35,7 @@ export default function ExploreEmbed() {
           <a className="font-medium text-accent-700 underline" href={`${REPO_URL}/tree/main/src/intertemporal/geoapp`}>
             <code>src/intertemporal/geoapp</code>
           </a>
-          , or set <code className="rounded bg-stone-100 px-1 font-sans text-accent-800">PUBLIC_GEOAPP_URL</code> at build time to embed it here.
+          , or set <code className="rounded bg-stone-100 px-1 font-sans text-accent-800 dark:bg-stone-800 dark:text-accent-300">PUBLIC_GEOAPP_URL</code> at build time to embed it here.
         </p>
       </Fallback>
     );
@@ -44,7 +44,7 @@ export default function ExploreEmbed() {
   return (
     <div>
       {status === "timeout" && (
-        <div className="mb-3 rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm text-amber-800">
+        <div className="mb-3 rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm text-amber-800 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-300">
           The explorer is taking a while — the backend may be waking up.{" "}
           <a className="font-medium text-accent-700 underline" href={GEOAPP_URL} target="_blank" rel="noreferrer">
             Open it in a new tab
@@ -52,7 +52,7 @@ export default function ExploreEmbed() {
           .
         </div>
       )}
-      <div className="aspect-[16/10] w-full overflow-hidden rounded-lg border border-rule bg-white">
+      <div className="aspect-[16/10] w-full overflow-hidden rounded-lg border border-rule bg-surface">
         <iframe
           src={GEOAPP_URL}
           title="Temporal geometry explorer"

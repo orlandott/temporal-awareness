@@ -32,6 +32,18 @@ const path = Astro.url.pathname;
 <!doctype html>
 <html lang="en">
   <head>
+    <!-- Set the theme before first paint (no flash). Inline + synchronous on purpose. -->
+    <script is:inline>
+      (function () {
+        try {
+          var stored = localStorage.getItem("theme");
+          var dark = stored
+            ? stored === "dark"
+            : window.matchMedia("(prefers-color-scheme: dark)").matches;
+          document.documentElement.classList.toggle("dark", dark);
+        } catch (e) {}
+      })();
+    </script>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{fullTitle}</title>
@@ -49,28 +61,65 @@ const path = Astro.url.pathname;
         <a href={`${BASE}`} class="font-display text-lg font-bold tracking-tight text-ink">
           Temporal Awareness
         </a>
-        <div class="hidden items-center gap-5 sm:flex">
-          {
-            nav.map((item) => {
-              const active = path === item.href || (item.href !== BASE && path.startsWith(item.href));
-              return (
-                <a
-                  href={item.href}
-                  class={`font-sans text-xs font-semibold uppercase tracking-widest transition ${
-                    active ? "text-accent-700" : "text-ink-soft hover:text-ink"
-                  }`}
-                >
-                  {item.label}
-                </a>
-              );
-            })
-          }
-          <a
-            href={ISSUES_URL}
-            class="font-sans text-xs font-semibold uppercase tracking-widest text-accent-700 hover:text-accent-800"
+        <div class="flex items-center gap-3 sm:gap-5">
+          <div class="hidden items-center gap-5 sm:flex">
+            {
+              nav.map((item) => {
+                const active = path === item.href || (item.href !== BASE && path.startsWith(item.href));
+                return (
+                  <a
+                    href={item.href}
+                    class={`font-sans text-xs font-semibold uppercase tracking-widest transition ${
+                      active ? "text-accent-700 dark:text-accent-400" : "text-ink-soft hover:text-ink"
+                    }`}
+                  >
+                    {item.label}
+                  </a>
+                );
+              })
+            }
+            <a
+              href={ISSUES_URL}
+              class="font-sans text-xs font-semibold uppercase tracking-widest text-accent-700 hover:text-accent-800 dark:text-accent-400 dark:hover:text-accent-300"
+            >
+              Browse issues →
+            </a>
+          </div>
+          <button
+            id="theme-toggle"
+            type="button"
+            aria-label="Toggle dark mode"
+            title="Toggle dark mode"
+            class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-rule text-ink-soft transition hover:border-accent-500 hover:text-ink"
           >
-            Browse issues →
-          </a>
+            <svg
+              class="h-[18px] w-[18px] dark:hidden"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.7"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"></path>
+            </svg>
+            <svg
+              class="hidden h-[18px] w-[18px] dark:block"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.7"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <circle cx="12" cy="12" r="4"></circle>
+              <path
+                d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"
+              ></path>
+            </svg>
+          </button>
         </div>
       </nav>
     </header>
@@ -99,5 +148,31 @@ const path = Astro.url.pathname;
         </div>
       </div>
     </footer>
+
+    <!-- Toggle wiring: flip + persist on click; keep following the OS until the user chooses. -->
+    <script is:inline>
+      (function () {
+        var btn = document.getElementById("theme-toggle");
+        if (!btn) return;
+        function apply(dark) {
+          document.documentElement.classList.toggle("dark", dark);
+        }
+        btn.addEventListener("click", function () {
+          var dark = !document.documentElement.classList.contains("dark");
+          apply(dark);
+          try {
+            localStorage.setItem("theme", dark ? "dark" : "light");
+          } catch (e) {}
+        });
+        window
+          .matchMedia("(prefers-color-scheme: dark)")
+          .addEventListener("change", function (e) {
+            try {
+              if (localStorage.getItem("theme")) return;
+            } catch (err) {}
+            apply(e.matches);
+          });
+      })();
+    </script>
   </body>
 </html>

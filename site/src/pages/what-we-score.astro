@@ -10,8 +10,8 @@ const demoTokens: Array<{ t: string; s: number }> = [
   { t: "for", s: 0.2 }, { t: "decades", s: 0.95 },
 ];
 const tone = (s: number) =>
-  s > 0.3 ? "bg-accent-100 text-accent-800"
-  : s < -0.3 ? "bg-rose-100 text-rose-700"
+  s > 0.3 ? "bg-accent-100 text-accent-800 dark:bg-accent-500/20 dark:text-accent-200"
+  : s < -0.3 ? "bg-rose-100 text-rose-700 dark:bg-rose-500/20 dark:text-rose-200"
   : "text-ink-soft";
 ---
 
@@ -38,7 +38,7 @@ const tone = (s: number) =>
       This example is illustrative — an active research direction
       (<a class="link-accent" href={`${REPO_URL}/issues/19`}>issue #19</a>).
     </p>
-    <p class="mt-4 rounded-lg border border-rule bg-white p-5 text-lg leading-loose text-ink">
+    <p class="mt-4 rounded-lg border border-rule bg-surface p-5 text-lg leading-loose text-ink">
       {demoTokens.map((tok) => (
         <span class={`rounded px-1 ${tone(tok.s)}`}>{tok.t} </span>
       ))}
@@ -46,7 +46,7 @@ const tone = (s: number) =>
   </section>
 
   <section class="mx-auto max-w-3xl px-4 pb-16">
-    <div class="rounded-lg border border-rule border-l-2 border-l-accent-500 bg-accent-50/50 p-6">
+    <div class="rounded-lg border border-rule border-l-2 border-l-accent-500 bg-accent-50/50 p-6 dark:bg-accent-500/10">
       <h2 class="font-display text-xl font-bold text-ink">Why this is a safety signal</h2>
       <p class="mt-3 text-ink-soft">
         The project's degradation experiments find that a model's safety behavior can weaken over long or

@@ -13,11 +13,11 @@ const THRUSTS = ["foundations", "mechanisms", "robustness", "theory"] as const;
 
 function Badge({ children, tone = "slate" }: { children: React.ReactNode; tone?: string }) {
   const tones: Record<string, string> = {
-    slate: "bg-stone-100 text-ink-soft",
-    accent: "bg-accent-100 text-accent-800",
-    emerald: "bg-emerald-50 text-emerald-700",
-    amber: "bg-amber-50 text-amber-700",
-    rose: "bg-rose-50 text-rose-700",
+    slate: "bg-stone-100 text-ink-soft dark:bg-stone-800",
+    accent: "bg-accent-100 text-accent-800 dark:bg-accent-500/20 dark:text-accent-200",
+    emerald: "bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300",
+    amber: "bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300",
+    rose: "bg-rose-50 text-rose-700 dark:bg-rose-500/15 dark:text-rose-300",
   };
   return (
     <span className={`rounded px-2 py-0.5 font-sans text-xs font-medium ${tones[tone]}`}>{children}</span>
@@ -57,9 +57,9 @@ export default function IssueBoard() {
 
   if (error) {
     return (
-      <div className="rounded-lg border border-amber-300 bg-amber-50 p-5 text-sm text-amber-800">
+      <div className="rounded-lg border border-amber-300 bg-amber-50 p-5 text-sm text-amber-800 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-300">
         {error}{" "}
-        <a className="font-medium text-accent-700 underline" href={ISSUES_URL}>
+        <a className="font-medium text-accent-700 underline dark:text-accent-400" href={ISSUES_URL}>
           Open the issues on GitHub
         </a>
         .
@@ -78,7 +78,7 @@ export default function IssueBoard() {
           <select
             value={difficulty}
             onChange={(e) => setDifficulty(e.target.value)}
-            className="rounded border border-stone-300 bg-white px-2 py-1.5 text-ink"
+            className="rounded border border-stone-300 bg-surface dark:border-stone-600 px-2 py-1.5 text-ink"
           >
             <option value="all">All</option>
             <option value="good-first">Good first issue</option>
@@ -92,7 +92,7 @@ export default function IssueBoard() {
           <select
             value={thrust}
             onChange={(e) => setThrust(e.target.value)}
-            className="rounded border border-stone-300 bg-white px-2 py-1.5 capitalize text-ink"
+            className="rounded border border-stone-300 bg-surface dark:border-stone-600 px-2 py-1.5 capitalize text-ink"
           >
             <option value="all">All</option>
             {THRUSTS.map((t) => (
@@ -107,7 +107,7 @@ export default function IssueBoard() {
           <select
             value={track}
             onChange={(e) => setTrack(e.target.value)}
-            className="rounded border border-stone-300 bg-white px-2 py-1.5 text-ink"
+            className="rounded border border-stone-300 bg-surface dark:border-stone-600 px-2 py-1.5 text-ink"
           >
             <option value="all">All</option>
             <option value="A">A · probe infra</option>
@@ -120,7 +120,7 @@ export default function IssueBoard() {
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder="Filter by title…"
-            className="w-full rounded border border-stone-300 bg-white px-3 py-1.5 text-ink placeholder:text-stone-400"
+            className="w-full rounded border border-stone-300 bg-surface dark:border-stone-600 px-3 py-1.5 text-ink placeholder:text-stone-400"
           />
         </label>
       </div>
@@ -136,7 +136,7 @@ export default function IssueBoard() {
 
       <ul className="space-y-3">
         {filtered.map((it) => (
-          <li key={it.number} className="rounded-lg border border-rule bg-white p-4 transition hover:border-stone-400">
+          <li key={it.number} className="rounded-lg border border-rule bg-surface p-4 transition hover:border-stone-400">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <a href={it.url} className="font-serif text-lg font-semibold text-ink hover:text-accent-700">
@@ -155,7 +155,7 @@ export default function IssueBoard() {
               </div>
               <a
                 href={it.url}
-                className="shrink-0 rounded-sm bg-ink px-3 py-1.5 text-sm font-semibold uppercase tracking-wide text-paper transition hover:bg-accent-800"
+                className="shrink-0 rounded-sm bg-ink px-3 py-1.5 text-sm font-semibold uppercase tracking-wide text-paper transition hover:bg-accent-800 dark:hover:bg-accent-300"
               >
                 Claim →
               </a>
@@ -164,7 +164,7 @@ export default function IssueBoard() {
         ))}
       </ul>
       {filtered.length === 0 && (
-        <p className="rounded-lg border border-rule bg-white p-5 text-sm text-ink-soft">
+        <p className="rounded-lg border border-rule bg-surface p-5 text-sm text-ink-soft">
           No issues match these filters. Try widening them, or{" "}
           <a className="font-medium text-accent-700 underline" href={ISSUES_URL}>
             browse all issues
