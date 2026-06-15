@@ -76,10 +76,10 @@ function ProbeChart({ sep }: { sep: Separability }) {
           </text>
         </g>
       ))}
-      <polyline points={line("train_accuracy")} fill="none" stroke="#6d28d9" strokeWidth={2.5} />
-      <polyline points={line("test_accuracy")} fill="none" stroke="#0f766e" strokeWidth={2.5} strokeDasharray="4 3" />
-      <circle cx={x(sep.peak_train.layer)} cy={y(sep.peak_train.accuracy)} r={4} fill="#6d28d9" />
-      <text x={x(sep.peak_train.layer)} y={y(sep.peak_train.accuracy) - 8} fill="#5b21b6" fontSize={11} textAnchor="middle">
+      <polyline points={line("train_accuracy")} fill="none" stroke="#059669" strokeWidth={2.5} />
+      <polyline points={line("test_accuracy")} fill="none" stroke="#78716c" strokeWidth={2.5} strokeDasharray="4 3" />
+      <circle cx={x(sep.peak_train.layer)} cy={y(sep.peak_train.accuracy)} r={4} fill="#059669" />
+      <text x={x(sep.peak_train.layer)} y={y(sep.peak_train.accuracy) - 8} fill="#065f46" fontSize={11} textAnchor="middle">
         Layer {sep.peak_train.layer}: {Math.round(sep.peak_train.accuracy * 100)}%
       </text>
       {sep.layers.map((r) => (
@@ -150,7 +150,7 @@ export default function ScoreCards() {
         <p className="mt-1 font-sans text-sm text-ink-soft">
           Time-horizon is readable from a single layer and peaks mid-network.{" "}
           <span className="text-accent-700">— train</span>,{" "}
-          <span className="text-teal-700">- - test</span>
+          <span className="text-stone-500">- - test</span>
         </p>
         <div className="mt-3">
           <ProbeChart sep={data.separability} />

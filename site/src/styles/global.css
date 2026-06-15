@@ -4,7 +4,7 @@
 
 :root {
   color-scheme: light;
-  --ombre: linear-gradient(135deg, #6d28d9 0%, #8b5cf6 55%, #a78bfa 100%);
+  --ombre: linear-gradient(135deg, #065f46 0%, #059669 50%, #10b981 100%);
 }
 
 html {
@@ -56,13 +56,13 @@ body {
 
 /* Soft purple fades for sections — a little more color, not a full wash */
 .ombre-wash {
-  background: linear-gradient(180deg, rgba(124, 58, 237, 0.13) 0%, rgba(168, 139, 250, 0.06) 45%, transparent 85%);
+  background: linear-gradient(180deg, rgba(5, 150, 105, 0.13) 0%, rgba(52, 211, 153, 0.06) 45%, transparent 85%);
 }
 .ombre-soft {
-  background: linear-gradient(180deg, rgba(124, 58, 237, 0.07) 0%, rgba(192, 132, 252, 0.04) 100%);
+  background: linear-gradient(180deg, rgba(5, 150, 105, 0.07) 0%, rgba(110, 231, 183, 0.04) 100%);
 }
 .btn-ombre {
-  background: linear-gradient(135deg, #6d28d9 0%, #8b5cf6 55%, #a78bfa 100%);
+  background: linear-gradient(135deg, #065f46 0%, #047857 55%, #059669 100%);
   color: #fff;
 }
 
