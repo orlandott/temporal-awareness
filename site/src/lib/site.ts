@@ -10,6 +10,11 @@ export const RESULTS_URL = `${REPO_URL}/tree/main/results`;
 /** Hosted geoapp FastAPI URL. Set PUBLIC_GEOAPP_URL at build time to enable the live explorer. */
 export const GEOAPP_URL: string = import.meta.env.PUBLIC_GEOAPP_URL ?? "";
 
-/** Prefix for static assets / generated data, respecting the deploy base path. */
-export const BASE: string = import.meta.env.BASE_URL;
+/** Prefix for static assets / generated data, respecting the deploy base path.
+ * Astro's BASE_URL omits the trailing slash when `base` has none (e.g. the GitHub
+ * Pages project path "/temporal-awareness"), which would turn `${BASE}understand`
+ * into "/temporal-awarenessunderstand" and 404 every internal link. Always end with
+ * exactly one slash so each `${BASE}path` join is well-formed. */
+const rawBase: string = import.meta.env.BASE_URL;
+export const BASE: string = rawBase.endsWith("/") ? rawBase : `${rawBase}/`;
 export const asset = (path: string): string => `${BASE}${path.replace(/^\//, "")}`;

@@ -59,3 +59,27 @@ jobs:
       - name: Mypy
         run: mypy src/ --ignore-missing-imports
         continue-on-error: true
+
+  site:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+      - name: Install site dependencies
+        working-directory: site
+        run: npm ci
+      # Build under the GitHub Pages project base path — the deploy condition that
+      # turned `${BASE}understand` into a 404. Locally `base` is "/", which hid it.
+      - name: Build site with the GitHub Pages project base path
+        working-directory: site
+        env:
+          PUBLIC_BASE_PATH: /temporal-awareness
+        run: npm run build
+      - name: Check built internal links resolve under the base path
+        env:
+          PUBLIC_BASE_PATH: /temporal-awareness
+        run: node scripts/site/check_built_links.mjs
